@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<head>
+<title>Solar System</title>
+<style>
+    * { margin:0; padding:0;}/* to remove the top and left whitespace */
+
+    html, body { width:100%; height:100%; overflow-y: hidden; overflow-x: hidden;} /* just to be sure these are full screen*/
+
+    #overlay {
+        position: absolute;
+        left: 0px;
+        top: -12px;
+        color: white;
+        font-size: 12px;
+        font-family: monospace;
+        padding: 1em;
+        white-space: pre-line;
+        user-select: none;
+        }
+
+
+    #planetsContainer {
+        position: absolute;
+        top:0;
+        left: 0;
+        right: 0;
+        display: table;
+        margin: auto;
+    }*/
+</style>
+</head>
+
+
+    <script id="default-vertex" type="x-shader/x-vertex">
+        uniform mat4 mModelView;
+        uniform mat4 mProjection;
+
+        attribute vec4 vPosition;
+        attribute vec3 vNormal;
+
+        varying vec3 fNormal;
+
+        void main() {
+            gl_Position = mProjection * mModelView * vPosition;
+            fNormal = vNormal;
+        }
+    </script>
+
+    <script id="default-fragment" type="x-shader/x-fragment">
+        precision highp float;
+
+        uniform vec4 color;
+        varying vec3 fNormal;
+
+        void main() {
+            vec4 colorTemp = mix(color, vec4(fNormal, 1.0), 0.2);
+            gl_FragColor = colorTemp;
+
+        }
+    </script>
+    
+    <script type="text/javascript" src="../Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="../Common/initShaders.js"></script>
+    <script type="text/javascript" src="../Common/MV.js"></script>
+    <script type="text/javascript" src="../Common/sphere.js"></script>
+    <script type="text/javascript" src="../Common/bunny.js"></script>
+    <script type="text/javascript" src="../Common/bunny-data.js"></script>
+    <script type="text/javascript" src="p10-1-start.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<body style="margin: 0px">
+    <div>
+        <div id="overlay">
+                <span id="days"></span> days
+                <span id="months"></span> months
+                <span id="years"></span> years
+                <span id="seconds_start"></span> seconds since start
+        </div>
+        <div id = "planetsContainer">
+            <button id="sun" name = "sun">Sun</button>
+            <button id="mercury" name = "mercury">Mercury</button>
+            <button id="venus" name = "venus">Venus</button>
+            <button id="earth" name = "earth">Earth</button>
+            <button id="mars" name = "mars">Mars</button>
+            <button id="jupiter" name = "jupiter">Jupiter</button>
+            <button id="saturn" name = "saturn">Saturn</button>
+            <button id="uranus" name = "uranus">Uranus</button>
+            <button id="neptune" name = "neptune">Neptune</button>
+        </div>
+        <canvas id="gl-canvas" width="100%" height="100%">
+            Ooops! Your browser doen't support WebGL!
+        </canvas>
+    </div>
+</body>
+</html>
