@@ -35,9 +35,9 @@ const moons = {
 }
 
 const planets = {
-    MERCURY: {diameter: 4866*PLANET_SCALE, orbit: 57950000*ORBIT_SCALE, year: 87.97, day: 58.646, color: vec4(1.0, 0.7, 0.0, 1.0)},
+    MERCURY: {diameter: 4866*PLANET_SCALE, orbit: 57950000*ORBIT_SCALE, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0)},
     VENUS: {diameter: 12106*PLANET_SCALE, orbit: 108110000*ORBIT_SCALE, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)},
-    EARTH: {diameter: 12742*PLANET_SCALE, orbit: 149570000*ORBIT_SCALE, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.8, 1.0, 1.0), 
+    EARTH: {diameter: 12742*PLANET_SCALE, orbit: 149570000*ORBIT_SCALE, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.6, 1.0, 1.0), 
         moons: [moons.MOON]},
     MARS: {diameter: 6760*PLANET_SCALE, orbit: 227840000*ORBIT_SCALE, year: 687, day: 1.01, color: vec4(1.0, 0.3, 0.0, 1.0),
         moons: [moons.PHOBOS, moons.DEIMOS]},
@@ -177,10 +177,8 @@ function keyPress(ev)
             if (zBuffer = !zBuffer) gl.enable(gl.DEPTH_TEST);
             else gl.disable(gl.DEPTH_TEST);
         break;
-        case "9": case "8": case "7":
-        case "6": case "5": case "4":
         case "3": case "2": case "1":
-        case "0": time_increment = 6*parseInt(ev.key);
+        case "0": time_increment = 3*Math.pow(parseInt(ev.key), 3);
         break;
         case "p": plane_floor = !plane_floor;
     }
