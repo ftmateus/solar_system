@@ -2,6 +2,7 @@ var canvas;
 var gl;
 var program;
 var aspect;
+var hammertime;
 
 var mProjectionLoc, mModelViewLoc, colorLoc;
 
@@ -12,7 +13,7 @@ var global_time = 0;
 
 var start_time;
 
-var isFilled = false, cullFace = false, zBuffer = false;
+var isFilled = true, cullFace = false, zBuffer = false;
 
 const ZBUFFER_KEY = 'z', BACKFACE_CULLING_KEY = 'b';
 const WIRED_FRAME_KEY = 'w', FILLED_KEY = 'f';
@@ -139,6 +140,14 @@ window.onload = function() {
     this.start_time = new Date().getTime();
     addEventListener("keypress", keyPress);
     canvas.addEventListener("wheel", function(){zoomCanvas(event);});
+
+    hammertime = new Hammer(document.getElementById('gl-canvas'));
+    hammertime.get('pinch').set({ enable: true });
+    hammertime.on('pinch', function(ev) {
+        console.log(ev.scale);
+        zoom *= ev.scale > 1 ? 1.01 : 0.99;
+    });
+
     //this.document.getElementById("sun").addEventListener("click", function() {center = SUN});
     $('#sun').bind('click', function() {center = SUN});
     $('#mercury').bind('click', function() {center = planets.MERCURY});
@@ -149,6 +158,10 @@ window.onload = function() {
     $('#saturn').bind('click', function() {center = planets.SATURN});
     $('#uranus').bind('click', function() {center = planets.URANUS});
     $('#neptune').bind('click', function() {center = planets.NEPTUNE});
+
+    $('#v1').bind('click', function() {time_increment = 3*Math.pow(1, 3);});
+    $('#v2').bind('click', function() {time_increment = 3*Math.pow(2, 3);});
+    $('#v3').bind('click', function() {time_increment = 3*Math.pow(3, 3);});
 
     render();
 }
@@ -226,7 +239,7 @@ function zoomCanvas(e)
 {
     var e_delta = (e.deltaY || -e.wheelDelta || e.detail);
     var delta =  e_delta && ((e_delta >> 10) || 1) || 0;
-    zoom *= (delta > 0 || event.detail > 0) ? 1.1 : 0.9;
+    zoom *= (delta > 0 || event.detail > 0) ? 1.05 : 0.95;
 }
 
 function addPlanet(planet)
