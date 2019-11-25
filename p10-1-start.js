@@ -71,6 +71,8 @@ var center = SUN;
 const VP_DISTANCE = planets.NEPTUNE.orbit;
 var zoom = VP_DISTANCE/planets.EARTH.orbit;
 
+var request;
+
 
 const REFRESH_RATE = 60;
 var time_increment = 6;
@@ -115,6 +117,8 @@ function fit_canvas_to_window()
 
     aspect = canvas.width / canvas.height;
     gl.viewport(0, 0,canvas.width, canvas.height);
+    if (global_time > 0)
+        if (time_increment == 0) animate();
 
 }
 
@@ -150,24 +154,28 @@ window.onload = function() {
     hammertime = new Hammer(document.getElementById('gl-canvas'));
     hammertime.get('pinch').set({ enable: true });
     hammertime.on('pinch', function(ev) {
-        console.log(ev.scale);
         zoom *= ev.scale > 1 ? 1.01 : 0.99;
+        if (time_increment == 0) animate();
     });
 
     //this.document.getElementById("sun").addEventListener("click", function() {center = SUN});
-    $('#sun').bind('click', function() {center = SUN});
-    $('#mercury').bind('click', function() {center = planets.MERCURY});
-    $('#venus').bind('click', function() {center = planets.VENUS});
-    $('#earth').bind('click', function() {center = planets.EARTH});
-    $('#mars').bind('click', function() {center = planets.MARS});
-    $('#jupiter').bind('click', function() {center = planets.JUPITER});
-    $('#saturn').bind('click', function() {center = planets.SATURN});
-    $('#uranus').bind('click', function() {center = planets.URANUS});
-    $('#neptune').bind('click', function() {center = planets.NEPTUNE});
+    $('#sun').bind('click', function() {center = SUN; if (time_increment == 0); animate();});
+    $('#mercury').bind('click', function() {center = planets.MERCURY; if (time_increment == 0) animate();});
+    $('#venus').bind('click', function() {center = planets.VENUS; if (time_increment == 0) animate();});
+    $('#earth').bind('click', function() {center = planets.EARTH; if (time_increment == 0) animate(); });
+    $('#mars').bind('click', function() {center = planets.MARS; if (time_increment == 0) animate();});
+    $('#jupiter').bind('click', function() {center = planets.JUPITER; if (time_increment == 0) animate();});
+    $('#saturn').bind('click', function() {center = planets.SATURN; if (time_increment == 0) animate();});
+    $('#uranus').bind('click', function() {center = planets.URANUS; if (time_increment == 0) animate();});
+    $('#neptune').bind('click', function() {center = planets.NEPTUNE; if (time_increment == 0) animate();});
 
     $('#v1').bind('click', function() {time_increment = 3*Math.pow(1, 3);});
     $('#v2').bind('click', function() {time_increment = 3*Math.pow(2, 3);});
     $('#v3').bind('click', function() {time_increment = 3*Math.pow(3, 3);});
+
+    document.addEventListener("visibilitychange", function() {
+        console.log(document.hidden, document.visibilityState);
+      }, false);
 
     render();
 }
@@ -196,8 +204,9 @@ function keyPress(ev)
             if (zBuffer = !zBuffer) gl.enable(gl.DEPTH_TEST);
             else gl.disable(gl.DEPTH_TEST);
         break;
-        case "3": case "2": case "1":
-        case "0": time_increment = 3*Math.pow(parseInt(ev.key), 3);
+        case "9": case "3": case "2":
+        case "1": case "0": time_increment = 3*Math.pow(parseInt(ev.key), 3);
+        animate();
         break;
         case "p": plane_floor = !plane_floor;
     }
@@ -218,10 +227,9 @@ function moveCamera()
     gl.uniformMatrix4fv(mProjectionLoc, false, flatten(projection));
 }
 
-function render() 
+function animate()
 {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
     moveCamera();
 
     addPlanet(planets.NEPTUNE);
@@ -237,15 +245,24 @@ function render()
     global_time += time_increment;
 
     renderOverlay();
-    
-    requestAnimationFrame(render);
+
+    request = requestAnimationFrame(render);
+}
+
+function render() 
+{
+    if (time_increment != 0)
+        animate();
+    else
+        cancelAnimationFrame(request);
 }
 
 function zoomCanvas(e)
 {
     var e_delta = (e.deltaY || -e.wheelDelta || e.detail);
     var delta =  e_delta && ((e_delta >> 10) || 1) || 0;
-    zoom *= (delta > 0 || event.detail > 0) ? 1.05 : 0.95;
+    zoom *= (delta > 0 || event.detail > 0) ? 1.1 : 0.9;
+    if (time_increment == 0) animate();
 }
 
 function addPlanet(planet)
@@ -258,11 +275,20 @@ function addPlanet(planet)
             multRotationY(global_time/planet.day);
             drawPlanet(planet.color);
         popMatrix();
+        if (planet == planets.SATURN)
+        {
+            pushMatrix();
+                multRotationX(-30);
+                multScale([planet.diameter*1.8, 0, planet.diameter*1.8]);
+                drawRings();
+            popMatrix();
+        }
         if (planet.moons != null)
         {
             for (var moon of planet.moons)
             {
                 pushMatrix();
+                    multRotationX(-30);
                     multRotationY(global_time/moon.year);
                     multTranslation([(moon.orbit), 0, 0]);
                     pushMatrix();
@@ -271,14 +297,6 @@ function addPlanet(planet)
                     popMatrix();
                 popMatrix();
             }
-        }
-        if (planet == planets.SATURN)
-        {
-            pushMatrix();
-                multRotationX(-30);
-                multScale([planet.diameter*1.8, 0, planet.diameter*1.8]);
-                drawRings();
-            popMatrix();
         }
     popMatrix();
 }
