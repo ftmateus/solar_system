@@ -32,7 +32,11 @@ const moons = {
     IO: {diameter: 3643*PLANET_SCALE, orbit: 421800*ORBIT_SCALE + 400000, year: 1.77, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
     EUROPA: {diameter: 3122*PLANET_SCALE, orbit: 671100*ORBIT_SCALE + 500000, year: 3.55, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
     GANIMEDES: {diameter: 5262*PLANET_SCALE, orbit: 1070400 *ORBIT_SCALE + 650000, year: 7.16 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    CALISTO: {diameter: 4821*PLANET_SCALE, orbit: 1882700*ORBIT_SCALE + 750000, year: 16.69 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)}
+    CALISTO: {diameter: 4821*PLANET_SCALE, orbit: 1882700*ORBIT_SCALE + 750000, year: 16.69 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    TITAN: {diameter: 5150*PLANET_SCALE, orbit: 1221870*ORBIT_SCALE + 750000, year: 16 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
+    REIA: {diameter: 1527*PLANET_SCALE, orbit: 527108*ORBIT_SCALE + 500000, year: 4.5 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
+    JAPETO: {diameter: 1470*PLANET_SCALE, orbit: 3560820*ORBIT_SCALE + 1500000, year: 79 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)}
+
 }
 
 const planets = {
@@ -44,7 +48,8 @@ const planets = {
         moons: [moons.PHOBOS, moons.DEIMOS]},
     JUPITER: {diameter: 142984*PLANET_SCALE/3, orbit: 778140000*ORBIT_SCALE, year: 12*365.26, day: 0.4, color: vec4(1.0, 1.0, 0.0, 1.0),
         moons: [moons.IO, moons.EUROPA, moons.GANIMEDES, moons.CALISTO]},
-    SATURN: {diameter: 120536*PLANET_SCALE/3, orbit: 1433449370*ORBIT_SCALE, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0)},
+    SATURN: {diameter: 120536*PLANET_SCALE/3, orbit: 1433449370*ORBIT_SCALE, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0),
+        moons: [moons.TITAN, moons.REIA, moons.JAPETO]},
     URANUS: {diameter: 51118*PLANET_SCALE/2, orbit: 2876679082*ORBIT_SCALE, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0)},
     NEPTUNE: {diameter: 49528*PLANET_SCALE/2, orbit: 4503443661*ORBIT_SCALE, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0)},
 }
@@ -136,6 +141,7 @@ window.onload = function() {
     colorLoc = gl.getUniformLocation(program, "color");
 
     sphereInit(gl);
+    torusInit(gl);
 
     this.start_time = new Date().getTime();
     addEventListener("keypress", keyPress);
@@ -266,6 +272,14 @@ function addPlanet(planet)
                 popMatrix();
             }
         }
+        if (planet == planets.SATURN)
+        {
+            pushMatrix();
+                multRotationX(-30);
+                multScale([planet.diameter*1.8, 0, planet.diameter*1.8]);
+                drawRings();
+            popMatrix();
+        }
     popMatrix();
 }
 
@@ -287,6 +301,16 @@ function drawPlanet(color)
         sphereDrawFilled(gl, program);
     else 
         sphereDrawWireFrame(gl, program);
+}
+
+function drawRings()
+{
+    gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
+    gl.uniform4fv(colorLoc, planets.SATURN.color);
+    if (isFilled)
+        torusDrawFilled(gl, program);
+    else 
+        torusDrawWireFrame(gl, program);
 }
 
 function renderOverlay()

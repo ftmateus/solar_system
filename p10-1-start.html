@@ -79,7 +79,7 @@
         varying vec3 fNormal;
 
         void main() {
-            vec4 colorTemp = mix(color, vec4(fNormal, 1.0), 0.2);
+            vec4 colorTemp = mix(color, vec4(fNormal, 1.0), 0.1);
             gl_FragColor = colorTemp;
 
         }
@@ -89,6 +89,7 @@
     <script type="text/javascript" src="../Common/initShaders.js"></script>
     <script type="text/javascript" src="../Common/MV.js"></script>
     <script type="text/javascript" src="../Common/sphere.js"></script>
+    <script type="text/javascript" src="../Common/torus.js"></script>
     <script type="text/javascript" src="../Common/bunny.js"></script>
     <script type="text/javascript" src="../Common/bunny-data.js"></script>
     <script type="text/javascript" src="p10-1-start.js"></script>
