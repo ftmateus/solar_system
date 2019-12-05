@@ -4,7 +4,7 @@ var program;
 var aspect;
 var hammertime;
 
-var mProjectionLoc, mModelViewLoc, colorLoc;
+var mProjectionLoc, mModelViewLoc, colorLoc, noTextureLoc;
 
 var matrixStack = [];
 var modelView;
@@ -39,19 +39,23 @@ const moons = {
 
 }
 
-const planets = {
-    MERCURY: {diameter: 4866*PLANET_SCALE, orbit: 57950000*ORBIT_SCALE, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    VENUS: {diameter: 12106*PLANET_SCALE, orbit: 108110000*ORBIT_SCALE, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)},
+var planets = {
+    MERCURY: {diameter: 4866*PLANET_SCALE, orbit: 57950000*ORBIT_SCALE, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0),
+        texture: null},
+    VENUS: {diameter: 12106*PLANET_SCALE, orbit: 108110000*ORBIT_SCALE, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)
+    , texture: null},
     EARTH: {diameter: 12742*PLANET_SCALE, orbit: 149570000*ORBIT_SCALE, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.6, 1.0, 1.0), 
-        moons: [moons.MOON]},
+        moons: [moons.MOON], texture: null},
     MARS: {diameter: 6760*PLANET_SCALE, orbit: 227840000*ORBIT_SCALE, year: 687, day: 1.01, color: vec4(1.0, 0.3, 0.0, 1.0),
-        moons: [moons.PHOBOS, moons.DEIMOS]},
+        moons: [moons.PHOBOS, moons.DEIMOS], texture: null},
     JUPITER: {diameter: 142984*PLANET_SCALE/3, orbit: 778140000*ORBIT_SCALE, year: 12*365.26, day: 0.4, color: vec4(1.0, 1.0, 0.0, 1.0),
-        moons: [moons.IO, moons.EUROPA, moons.GANIMEDES, moons.CALISTO]},
+        moons: [moons.IO, moons.EUROPA, moons.GANIMEDES, moons.CALISTO], texture: null},
     SATURN: {diameter: 120536*PLANET_SCALE/3, orbit: 1433449370*ORBIT_SCALE, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0),
-        moons: [moons.TITAN, moons.REIA, moons.JAPETO]},
-    URANUS: {diameter: 51118*PLANET_SCALE/2, orbit: 2876679082*ORBIT_SCALE, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0)},
-    NEPTUNE: {diameter: 49528*PLANET_SCALE/2, orbit: 4503443661*ORBIT_SCALE, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0)},
+        moons: [moons.TITAN, moons.REIA, moons.JAPETO], texture: null},
+    URANUS: {diameter: 51118*PLANET_SCALE/2, orbit: 2876679082*ORBIT_SCALE, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0),
+        texture: null},
+    NEPTUNE: {diameter: 49528*PLANET_SCALE/2, orbit: 4503443661*ORBIT_SCALE, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0), 
+        texture: null},
 }
 
 const SUN = {diameter:  1391900*0.8, orbit: 0, year: 0, day: 24.47};
@@ -143,9 +147,12 @@ window.onload = function() {
     mModelViewLoc = gl.getUniformLocation(program, "mModelView");
     mProjectionLoc = gl.getUniformLocation(program, "mProjection");
     colorLoc = gl.getUniformLocation(program, "color");
+    noTextureLoc = gl.getUniformLocation(program, "noTexture");
 
     sphereInit(gl);
     torusInit(gl);
+
+    setupPlanetsTextures();
 
     this.start_time = new Date().getTime();
     addEventListener("keypress", keyPress);
@@ -180,6 +187,43 @@ window.onload = function() {
     render();
 }
 
+function setupPlanetsTextures()
+{
+    planets.MERCURY.texture = setupTexture("2k_mercury.jpg");
+    planets.VENUS.texture = setupTexture("2k_venus_atmosphere.jpg");
+    planets.EARTH.texture = setupTexture("2k_earth_daymap.jpg");
+    planets.MARS.texture = setupTexture("2k_mars.jpg");
+    planets.JUPITER.texture = setupTexture("2k_jupiter.jpg");
+    planets.SATURN.texture = setupTexture("2k_saturn.jpg");
+    planets.URANUS.texture = setupTexture("2k_uranus.jpg");
+    planets.NEPTUNE.texture = setupTexture("2k_neptune.jpg");
+}
+
+
+function setupTexture(imagesrc)
+{
+        // Create a texture.
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE,
+    new Uint8Array([0, 255, 0, 128]));
+    // Asynchronously load an image
+    var image = new Image();
+    image.src = "textures/" + imagesrc;
+    image.addEventListener('load', function() {
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        // Now that the image has loaded make copy it to the texture.
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
+        gl.generateMipmap(gl.TEXTURE_2D);
+    });
+
+    return texture;
+}
 
 /**
  * Handles key selection.
@@ -273,7 +317,7 @@ function addPlanet(planet)
         pushMatrix();
             multScale([ planet.diameter, planet.diameter, planet.diameter]);
             multRotationY(global_time/planet.day);
-            drawPlanet(planet.color);
+            drawPlanet(planet.color, planet.texture);
         popMatrix();
         if (planet == planets.SATURN)
         {
@@ -311,14 +355,15 @@ function sun()
         popMatrix();
     popMatrix();
 }
-function drawPlanet(color)
+function drawPlanet(color, texture = null)
 {
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, color);
+    gl.uniform1i(noTextureLoc, texture == null ? 0 : 1);
     if (isFilled)
-        sphereDrawFilled(gl, program);
+        sphereDrawFilled(gl, program, texture);
     else 
-        sphereDrawWireFrame(gl, program);
+        sphereDrawWireFrame(gl, program, texture);
 }
 
 function drawRings()

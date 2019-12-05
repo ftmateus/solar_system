@@ -60,15 +60,19 @@
     <script id="default-vertex" type="x-shader/x-vertex">
         uniform mat4 mModelView;
         uniform mat4 mProjection;
+        
 
         attribute vec4 vPosition;
         attribute vec3 vNormal;
+        attribute vec2 vTexCoord;
 
         varying vec3 fNormal;
+        varying vec2 fTexCoord;
 
         void main() {
             gl_Position = mProjection * mModelView * vPosition;
             fNormal = vNormal;
+            fTexCoord = vTexCoord;
         }
     </script>
 
@@ -76,11 +80,18 @@
         precision highp float;
 
         uniform vec4 color;
+        uniform bool noTexture;
         varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        uniform sampler2D texture;
 
         void main() {
             vec4 colorTemp = mix(color, vec4(fNormal, 1.0), 0.1);
-            gl_FragColor = colorTemp;
+            vec4 texTemp = texture2D(texture, fTexCoord);
+            if (noTexture)
+                gl_FragColor = colorTemp;
+            else
+                gl_FragColor = texTemp;
 
         }
     </script>
@@ -88,7 +99,7 @@
     <script type="text/javascript" src="../Common/webgl-utils.js"></script>
     <script type="text/javascript" src="../Common/initShaders.js"></script>
     <script type="text/javascript" src="../Common/MV.js"></script>
-    <script type="text/javascript" src="../Common/sphere.js"></script>
+    <script type="text/javascript" src="sphere_textures.js"></script>
     <script type="text/javascript" src="../Common/torus.js"></script>
     <script type="text/javascript" src="../Common/bunny.js"></script>
     <script type="text/javascript" src="../Common/bunny-data.js"></script>
