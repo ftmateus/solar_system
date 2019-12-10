@@ -65,6 +65,7 @@
         uniform mat4 mModelView;
         uniform mat4 mView;
         uniform mat4 mProjection;
+        uniform float distance;
         
 
         attribute vec4 vPosition;
@@ -89,7 +90,7 @@
                 fLight = normalize((mView*lightPosition).xyz - posC);
             // Compute the view vector
             // fViewer = -fPosition; // Perspective projection
-            fViewer = vec3(0,0,1); // Parallel projection only
+            fViewer = vec3(0,0,distance); // Parallel projection only
 
             gl_Position = mProjection * mModelView * vPosition;
             fTexCoord = vTexCoord;
@@ -109,8 +110,8 @@
         const vec3 materialAmb = vec3(1.0, 1.0, 1.0);
         const vec3 materialDif = vec3(1.0, 1.0, 1.0);
         const vec3 materialSpe = vec3(1.0, 1.0, 1.0);
-        const float shininess = 10000.0;
-        const vec3 lightAmb = vec3(0.1, 0.1, 0.1);
+        const float shininess = 100000000.0;
+        const vec3 lightAmb = vec3(0.1, 0.1, 0.1); //sun m
         const vec3 lightDif = vec3(0.7, 0.7, 0.7);
         const vec3 lightSpe = vec3(1.0, 1.0, 1.0);
         vec3 ambientColor = lightAmb * materialAmb;
@@ -136,13 +137,9 @@
             vec4 colorTemp = vec4(ambientColor + diffuse + specular, 1.0);//mix(color, vec4(fNormal, 1.0), 0.1);;
             vec4 texTemp;
             if (sun)
-            {   
                 texTemp = texture2D(texture, fTexCoord);
-            }
             else
-            {
                 texTemp = texture2D(texture, fTexCoord) * colorTemp;
-            } 
             if (noTexture)
                 gl_FragColor = colorTemp;
             else

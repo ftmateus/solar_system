@@ -4,7 +4,8 @@ var program;
 var aspect;
 var hammertime;
 
-var mProjectionLoc, mModelViewLoc, colorLoc, noTextureLoc, mNormalsLoc, mViewNormalsLoc, mViewLoc, sunLoc;
+var mProjectionLoc, mModelViewLoc, colorLoc, noTextureLoc, mNormalsLoc, mViewNormalsLoc, mViewLoc, sunLoc,
+distanceLoc;
 
 var matrixStack = [];
 var modelView;
@@ -153,6 +154,7 @@ window.onload = function() {
     this.mViewNormalsLoc = gl.getUniformLocation(program, "mViewNormals");
     this.mViewLoc = gl.getUniformLocation(program, "mView");
     this.sunLoc = gl.getUniformLocation(program, "sun");
+    this.distanceLoc = gl.getUniformLocation(program, "distance");
     
 
     sphereInit(gl);
@@ -329,7 +331,7 @@ function addPlanet(planet)
         pushMatrix();
             multScale([ planet.diameter, planet.diameter, planet.diameter]);
             multRotationY(global_time/planet.day);
-            drawPlanet(planet.color, textures && isFilled ? planet.texture : null);
+            drawPlanet(planet.color, textures && isFilled ? planet.texture : null, planet.distance);
         popMatrix();
         if (planet == planets.SATURN)
         {
@@ -349,7 +351,7 @@ function addPlanet(planet)
                     multTranslation([(moon.orbit), 0, 0]);
                     pushMatrix();
                         multScale([ moon.diameter, moon.diameter, moon.diameter]);
-                        drawPlanet(moon.color, textures && isFilled  ? moon.texture : null);
+                        drawPlanet(moon.color, textures && isFilled  ? moon.texture : null, planet.distance);
                     popMatrix();
                 popMatrix();
             }
@@ -364,15 +366,17 @@ function sun()
         pushMatrix();
         multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
         multRotationY(global_time/SUN_DAY);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? SUN.texture : null);
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? SUN.texture : null, 0);
         popMatrix();
     popMatrix();
 }
-function drawPlanet(color, texture = null)
+function drawPlanet(color, texture = null, distance)
 {
+
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, color);
+    gl.uniform1f(distanceLoc, distance);
     gl.uniform1i(noTextureLoc, texture == null ? 1 : 0);
     if (isFilled)
         sphereDrawFilled(gl, program, texture);
