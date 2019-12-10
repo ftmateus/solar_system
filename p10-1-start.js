@@ -25,8 +25,8 @@ var stop = false;
 const PLANET_SCALE = 10;
 const ORBIT_SCALE = 1/80;
 
-const moons = {
-    MOON: {diameter: 3474*PLANET_SCALE, orbit: 363396*ORBIT_SCALE + 150000, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+var moons = {
+    MOON: {diameter: 3474*PLANET_SCALE, orbit: 363396*ORBIT_SCALE + 150000, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0), texture: null},
     PHOBOS: {diameter:  11.2667*PLANET_SCALE*6, orbit: 9376*ORBIT_SCALE + 100000, year: 0.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
     DEIMOS: {diameter:  12.4*PLANET_SCALE*6, orbit:  23455.5*ORBIT_SCALE + 150000, year: 1.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0) },
     IO: {diameter: 3643*PLANET_SCALE, orbit: 421800*ORBIT_SCALE + 400000, year: 1.77, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
@@ -58,7 +58,7 @@ var planets = {
         texture: null},
 }
 
-const SUN = {diameter:  1391900*0.8, orbit: 0, year: 0, day: 24.47};
+var SUN = {diameter:  1391900*0.8, orbit: 0, year: 0, day: 24.47, texture: null};
 
 
 const SUN_DIAMETER = 1391900*0.8;
@@ -197,6 +197,8 @@ function setupPlanetsTextures()
     planets.SATURN.texture = setupTexture("2k_saturn.jpg");
     planets.URANUS.texture = setupTexture("2k_uranus.jpg");
     planets.NEPTUNE.texture = setupTexture("2k_neptune.jpg");
+    SUN.texture = setupTexture("2k_sun.jpg");
+    moons.MOON.texture = setupTexture("2k_moon.jpg");
 }
 
 
@@ -249,7 +251,7 @@ function keyPress(ev)
             else gl.disable(gl.DEPTH_TEST);
         break;
         case "9": case "3": case "2":
-        case "1": case "0": time_increment = 3*Math.pow(parseInt(ev.key), 3);
+        case "1": case "0": time_increment = Math.pow(parseInt(ev.key), 3);
         animate();
         break;
         case "p": plane_floor = !plane_floor;
@@ -337,7 +339,7 @@ function addPlanet(planet)
                     multTranslation([(moon.orbit), 0, 0]);
                     pushMatrix();
                         multScale([ moon.diameter, moon.diameter, moon.diameter]);
-                        drawPlanet(moon.color);
+                        drawPlanet(moon.color, moon.texture);
                     popMatrix();
                 popMatrix();
             }
@@ -351,7 +353,7 @@ function sun()
         pushMatrix();
         multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
         multRotationY(global_time/SUN_DAY);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0));
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), SUN.texture);
         popMatrix();
     popMatrix();
 }
@@ -359,7 +361,7 @@ function drawPlanet(color, texture = null)
 {
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, color);
-    gl.uniform1i(noTextureLoc, texture == null ? 0 : 1);
+    gl.uniform1i(noTextureLoc, texture == null ? 1 : 0);
     if (isFilled)
         sphereDrawFilled(gl, program, texture);
     else 
@@ -368,6 +370,7 @@ function drawPlanet(color, texture = null)
 
 function drawRings()
 {
+    gl.uniform1i(noTextureLoc, 1);
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, planets.SATURN.color);
     if (isFilled)

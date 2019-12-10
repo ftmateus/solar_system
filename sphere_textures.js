@@ -37,13 +37,13 @@ function sphereBuild(nlat, nlon)
     sphere_texCoords.push(vec2(1.0, 0.5));
     
     // Generate middle
-    for(var i=1, phi=Math.PI/2-d_phi; i<=nlat; i++, phi-=d_phi) {
-        for(var j=1, theta=0; j<=nlon; j++, theta+=d_theta) {
+    for(var i=0, phi=Math.PI/2-d_phi; i<=nlat; i++, phi-=d_phi) {
+        for(var j=0, theta=0; j<=nlon; j++, theta+=d_theta) {
             var pt = vec3(r*Math.cos(phi)*Math.cos(theta),r*Math.sin(phi),r*Math.cos(phi)*Math.sin(theta));
             sphere_points.push(pt);
             var n = vec3(pt);
             sphere_normals.push(normalize(n));
-            sphere_texCoords.push(vec2(i/j, j/i));
+            sphere_texCoords.push(vec2(1-j/nlon, i/nlat));
         }
     }
     
@@ -51,7 +51,7 @@ function sphereBuild(nlat, nlon)
     var south = vec3(0,-r,0);
     sphere_points.push(south);
     sphere_normals.push(vec3(0,-1,0));
-    sphere_texCoords.push(vec2(0.0, 0.5));
+    sphere_texCoords.push(vec2(0.5, 0.0));
 
     // Generate the faces
     
