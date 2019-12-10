@@ -259,8 +259,10 @@ function keyPress(ev)
             else gl.disable(gl.DEPTH_TEST);
         break;
         case "9": case "3": case "2":
-        case "1": case "0": time_increment = Math.pow(parseInt(ev.key), 3);
-        if (time_increment == 0) animate();
+        case "1": case "0": 
+        let wasAnimated = time_increment != 0;
+        time_increment = Math.pow(parseInt(ev.key), 3);
+        if (!wasAnimated) animate();
         break;
         case "p": plane_floor = !plane_floor; break;
         case "t": textures = !textures; break;
