@@ -58,7 +58,12 @@
 
 
     <script id="default-vertex" type="x-shader/x-vertex">
+        const vec4 lightPosition = vec4(0.0, 1.8, 1.3, 1.0);
+        
+        uniform mat4 mNormals;
+        uniform mat4 mViewNormals; // Matriz inversa da transposta de mView
         uniform mat4 mModelView;
+        uniform mat4 mView;
         uniform mat4 mProjection;
         
 
@@ -66,28 +71,78 @@
         attribute vec3 vNormal;
         attribute vec2 vTexCoord;
 
-        varying vec3 fNormal;
+        varying vec3 fNormal; // normal vector in camera space
+        varying vec3 fLight; // Light vector in camera space
+        varying vec3 fViewer; // View vector in camera space
         varying vec2 fTexCoord;
 
         void main() {
+            // compute position in camera frame
+            vec3 posC = (mModelView * vPosition).xyz;
+            // compute normal in camera frame
+            fNormal = (mNormals * vec4(vNormal, 1.0)).xyz;
+
+            // compute light vector in camera frame
+            if(lightPosition.w == 0.0)
+                fLight = normalize((mViewNormals * lightPosition).xyz);
+            else
+                fLight = normalize((mView*lightPosition).xyz - posC);
+            // Compute the view vector
+            // fViewer = -fPosition; // Perspective projection
+            fViewer = vec3(0,0,1); // Parallel projection only
+
             gl_Position = mProjection * mModelView * vPosition;
-            fNormal = vNormal;
             fTexCoord = vTexCoord;
         }
     </script>
 
     <script id="default-fragment" type="x-shader/x-fragment">
-        precision highp float;
+        precision mediump float;
 
         uniform vec4 color;
         uniform bool noTexture;
         varying vec3 fNormal;
         varying vec2 fTexCoord;
         uniform sampler2D texture;
+        uniform bool sun;
+
+        const vec3 materialAmb = vec3(1.0, 1.0, 1.0);
+        const vec3 materialDif = vec3(1.0, 1.0, 1.0);
+        const vec3 materialSpe = vec3(1.0, 1.0, 1.0);
+        const float shininess = 10000.0;
+        const vec3 lightAmb = vec3(0.1, 0.1, 0.1);
+        const vec3 lightDif = vec3(0.7, 0.7, 0.7);
+        const vec3 lightSpe = vec3(1.0, 1.0, 1.0);
+        vec3 ambientColor = lightAmb * materialAmb;
+        vec3 diffuseColor = lightDif * materialDif;
+        vec3 specularColor = lightSpe * materialSpe;
+        varying vec3 fLight;
+        varying vec3 fViewer;
+
 
         void main() {
-            vec4 colorTemp = mix(color, vec4(fNormal, 1.0), 0.1);
-            vec4 texTemp = texture2D(texture, fTexCoord);
+            vec3 L = normalize(fLight);
+            vec3 V = normalize(fViewer);
+            vec3 N = normalize(fNormal);
+            vec3 H = normalize(L+V);
+            float diffuseFactor = max( dot(L,N), 0.0 );
+            vec3 diffuse = diffuseFactor * diffuseColor;
+            float specularFactor = pow(max(dot(N,H), 0.0), shininess);
+            vec3 specular = specularFactor * specularColor;
+            if( dot(L,N) < 0.0 ) {
+            specular = vec3(0.0, 0.0, 0.0);
+            }
+
+            vec4 colorTemp = vec4(ambientColor + diffuse + specular, 1.0);//mix(color, vec4(fNormal, 1.0), 0.1);;
+            vec4 texTemp;
+            if (sun)
+            {   
+                texTemp = texture2D(texture, fTexCoord);
+            }
+            else
+            {
+                texTemp = texture2D(texture, fTexCoord) * colorTemp;
+            } 
             if (noTexture)
                 gl_FragColor = colorTemp;
             else

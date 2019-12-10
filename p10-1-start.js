@@ -4,7 +4,7 @@ var program;
 var aspect;
 var hammertime;
 
-var mProjectionLoc, mModelViewLoc, colorLoc, noTextureLoc;
+var mProjectionLoc, mModelViewLoc, colorLoc, noTextureLoc, mNormalsLoc, mViewNormalsLoc, mViewLoc, sunLoc;
 
 var matrixStack = [];
 var modelView;
@@ -149,6 +149,11 @@ window.onload = function() {
     mProjectionLoc = gl.getUniformLocation(program, "mProjection");
     colorLoc = gl.getUniformLocation(program, "color");
     noTextureLoc = gl.getUniformLocation(program, "noTexture");
+    this.mNormalsLoc = gl.getUniformLocation(program, "mNormals");
+    this.mViewNormalsLoc = gl.getUniformLocation(program, "mViewNormals");
+    this.mViewLoc = gl.getUniformLocation(program, "mView");
+    this.sunLoc = gl.getUniformLocation(program, "sun");
+    
 
     sphereInit(gl);
     torusInit(gl);
@@ -272,6 +277,8 @@ function moveCamera()
     modelView = plane_floor ? PLANE_FLOOR : lookAt([0,VP_DISTANCE,VP_DISTANCE], 
         [x,0,-y], [0,1,0]);
 
+    gl.uniformMatrix4fv(mViewLoc, false, flatten(modelView));
+    gl.uniformMatrix4fv(mViewNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mProjectionLoc, false, flatten(projection));
 }
 
@@ -315,6 +322,7 @@ function zoomCanvas(e)
 
 function addPlanet(planet)
 {
+    gl.uniform1i(sunLoc, 0);
     pushMatrix();
         multRotationY(global_time/planet.year);
         multTranslation([(planet.orbit), 0, 0]);
@@ -351,6 +359,7 @@ function addPlanet(planet)
 
 function sun()
 {
+    gl.uniform1i(sunLoc, 1);
     pushMatrix();
         pushMatrix();
         multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
@@ -361,6 +370,7 @@ function sun()
 }
 function drawPlanet(color, texture = null)
 {
+    gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, color);
     gl.uniform1i(noTextureLoc, texture == null ? 1 : 0);
@@ -372,6 +382,7 @@ function drawPlanet(color, texture = null)
 
 function drawRings()
 {
+    gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniform1i(noTextureLoc, 1);
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, planets.SATURN.color);
