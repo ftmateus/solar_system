@@ -137,7 +137,7 @@ window.onload = function() {
     gl = WebGLUtils.setupWebGL(document.getElementById('gl-canvas'));
     fit_canvas_to_window();
 
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -255,8 +255,8 @@ function keyPress(ev)
         case "1": case "0": time_increment = Math.pow(parseInt(ev.key), 3);
         animate();
         break;
-        case "p": plane_floor = !plane_floor;
-        case "t": textures = !textures;
+        case "p": plane_floor = !plane_floor; break;
+        case "t": textures = !textures; break;
     }
 }
 
@@ -321,7 +321,7 @@ function addPlanet(planet)
         pushMatrix();
             multScale([ planet.diameter, planet.diameter, planet.diameter]);
             multRotationY(global_time/planet.day);
-            drawPlanet(planet.color, textures ? planet.texture : null);
+            drawPlanet(planet.color, textures && isFilled ? planet.texture : null);
         popMatrix();
         if (planet == planets.SATURN)
         {
@@ -341,7 +341,7 @@ function addPlanet(planet)
                     multTranslation([(moon.orbit), 0, 0]);
                     pushMatrix();
                         multScale([ moon.diameter, moon.diameter, moon.diameter]);
-                        drawPlanet(moon.color, textures ? moon.texture : null);
+                        drawPlanet(moon.color, textures && isFilled  ? moon.texture : null);
                     popMatrix();
                 popMatrix();
             }
@@ -355,7 +355,7 @@ function sun()
         pushMatrix();
         multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
         multRotationY(global_time/SUN_DAY);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures ? SUN.texture : null);
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? SUN.texture : null);
         popMatrix();
     popMatrix();
 }
