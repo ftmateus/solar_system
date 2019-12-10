@@ -20,6 +20,7 @@ const WIRED_FRAME_KEY = 'w', FILLED_KEY = 'f';
 
 var plane_floor = false;
 var stop = false;
+var textures = true;
 
 
 const PLANET_SCALE = 10;
@@ -255,6 +256,7 @@ function keyPress(ev)
         animate();
         break;
         case "p": plane_floor = !plane_floor;
+        case "t": textures = !textures;
     }
 }
 
@@ -319,7 +321,7 @@ function addPlanet(planet)
         pushMatrix();
             multScale([ planet.diameter, planet.diameter, planet.diameter]);
             multRotationY(global_time/planet.day);
-            drawPlanet(planet.color, planet.texture);
+            drawPlanet(planet.color, textures ? planet.texture : null);
         popMatrix();
         if (planet == planets.SATURN)
         {
@@ -339,7 +341,7 @@ function addPlanet(planet)
                     multTranslation([(moon.orbit), 0, 0]);
                     pushMatrix();
                         multScale([ moon.diameter, moon.diameter, moon.diameter]);
-                        drawPlanet(moon.color, moon.texture);
+                        drawPlanet(moon.color, textures ? moon.texture : null);
                     popMatrix();
                 popMatrix();
             }
@@ -353,7 +355,7 @@ function sun()
         pushMatrix();
         multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
         multRotationY(global_time/SUN_DAY);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), SUN.texture);
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures ? SUN.texture : null);
         popMatrix();
     popMatrix();
 }
