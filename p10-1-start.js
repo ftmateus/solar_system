@@ -188,9 +188,9 @@ window.onload = function() {
     $('#v2').bind('click', function() {time_increment = 3*Math.pow(2, 3);});
     $('#v3').bind('click', function() {time_increment = 3*Math.pow(3, 3);});
 
-    document.addEventListener("visibilitychange", function() {
-        console.log(document.hidden, document.visibilityState);
-      }, false);
+    // document.addEventListener("visibilitychange", function() {
+    //     console.log(document.hidden, document.visibilityState);
+    //   }, false);
 
     render();
 }
@@ -260,7 +260,7 @@ function keyPress(ev)
         break;
         case "9": case "3": case "2":
         case "1": case "0": time_increment = Math.pow(parseInt(ev.key), 3);
-        animate();
+        if (time_increment == 0) animate();
         break;
         case "p": plane_floor = !plane_floor; break;
         case "t": textures = !textures; break;
