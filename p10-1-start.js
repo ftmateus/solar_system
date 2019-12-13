@@ -1,6 +1,7 @@
 var canvas;
 var gl;
-var program;
+var programPhong, programGouraud;
+var currentProgram, nextProgram;
 var aspect;
 var hammertime;
 
@@ -142,22 +143,11 @@ window.onload = function() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    program = initShaders(gl, 'default-vertex', 'default-fragment');
+    programPhong = initShaders(gl, 'phong-vertex', 'phong-fragment');
+    programGouraud = initShaders(gl, 'gouraud-vertex', 'gouraud-fragment');
+    nextProgram = programPhong;
 
-    gl.useProgram(program);
-
-    mModelViewLoc = gl.getUniformLocation(program, "mModelView");
-    mProjectionLoc = gl.getUniformLocation(program, "mProjection");
-    colorLoc = gl.getUniformLocation(program, "color");
-    noTextureLoc = gl.getUniformLocation(program, "noTexture");
-    this.mNormalsLoc = gl.getUniformLocation(program, "mNormals");
-    this.mViewNormalsLoc = gl.getUniformLocation(program, "mViewNormals");
-    this.mViewLoc = gl.getUniformLocation(program, "mView");
-    this.sunLoc = gl.getUniformLocation(program, "sun");
-    this.distanceLoc = gl.getUniformLocation(program, "distance");
-    
-
-    sphereInit(gl);
+    sphereInit(gl, 250, 100);
     torusInit(gl);
 
     setupPlanetsTextures();
@@ -193,6 +183,23 @@ window.onload = function() {
     //   }, false);
 
     render();
+}
+
+function switchShading()
+{
+    currentProgram = nextProgram;
+    nextProgram = null;
+    gl.useProgram(currentProgram);
+
+    mModelViewLoc = gl.getUniformLocation(currentProgram, "mModelView");
+    mProjectionLoc = gl.getUniformLocation(currentProgram, "mProjection");
+    colorLoc = gl.getUniformLocation(currentProgram, "color");
+    noTextureLoc = gl.getUniformLocation(currentProgram, "noTexture");
+    this.mNormalsLoc = gl.getUniformLocation(currentProgram, "mNormals");
+    this.mViewNormalsLoc = gl.getUniformLocation(currentProgram, "mViewNormals");
+    this.mViewLoc = gl.getUniformLocation(currentProgram, "mView");
+    this.sunLoc = gl.getUniformLocation(currentProgram, "sun");
+    this.distanceLoc = gl.getUniformLocation(currentProgram, "distance");
 }
 
 function setupPlanetsTextures()
@@ -266,6 +273,8 @@ function keyPress(ev)
         break;
         case "p": plane_floor = !plane_floor; break;
         case "t": textures = !textures; break;
+        case "n": nextProgram = programPhong; break;
+        case "m": nextProgram = programGouraud; break;
     }
 }
 
@@ -288,13 +297,14 @@ function moveCamera()
 
 function animate()
 {
+    if (nextProgram != null) switchShading();
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     moveCamera();
 
     addPlanet(planets.NEPTUNE);
     addPlanet(planets.URANUS);
     addPlanet(planets.SATURN);
-    addPlanet(planets.JUPITER) ;
+    addPlanet(planets.JUPITER);
     addPlanet(planets.MARS);
     addPlanet(planets.EARTH);
     addPlanet(planets.VENUS);
@@ -381,9 +391,9 @@ function drawPlanet(color, texture = null, distance)
     gl.uniform1f(distanceLoc, distance);
     gl.uniform1i(noTextureLoc, texture == null ? 1 : 0);
     if (isFilled)
-        sphereDrawFilled(gl, program, texture);
+        sphereDrawFilled(gl, currentProgram, texture);
     else 
-        sphereDrawWireFrame(gl, program, texture);
+        sphereDrawWireFrame(gl, currentProgram, texture);
 }
 
 function drawRings()
@@ -393,9 +403,9 @@ function drawRings()
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, planets.SATURN.color);
     if (isFilled)
-        torusDrawFilled(gl, program);
+        torusDrawFilled(gl, currentProgram);
     else 
-        torusDrawWireFrame(gl, program);
+        torusDrawWireFrame(gl, currentProgram);
 }
 
 function renderOverlay()
@@ -405,5 +415,5 @@ function renderOverlay()
     document.getElementById("years").textContent = parseInt((global_time/360)/EARTH_YEAR);
     if (time_increment != 0)
         document.getElementById("seconds_start").textContent = parseInt(((global_time/time_increment)/REFRESH_RATE));//(global_time/360)/EARTH_YEAR;
-
+    document.getElementById("shading_method").textContent = currentProgram == programPhong ? "Phong" : "Gouraud";
 }

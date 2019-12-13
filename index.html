@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <head>
+<meta charset="UTF-8">
 <title>Solar System</title>
 <style>
     * { margin:0; padding:0;}/* to remove the top and left whitespace */
@@ -55,10 +56,8 @@
     
 </style>
 </head>
-
-
-    <script id="default-vertex" type="x-shader/x-vertex">
-        const vec4 lightPosition = vec4(0.0, 1.8, 1.3, 1.0);
+    <script id="phong-vertex" type="x-shader/x-vertex">
+        const vec4 lightPosition = vec4(0.0, 0.0, 0.0, 1.0);
         
         uniform mat4 mNormals;
         uniform mat4 mViewNormals; // Matriz inversa da transposta de mView
@@ -96,8 +95,8 @@
             fTexCoord = vTexCoord;
         }
     </script>
-
-    <script id="default-fragment" type="x-shader/x-fragment">
+    
+    <script id="phong-fragment" type="x-shader/x-fragment">
         precision mediump float;
 
         uniform vec4 color;
@@ -147,6 +146,85 @@
 
         }
     </script>
+
+    <script id="gouraud-vertex" type="x-shader/x-vertex">
+        const vec4 lightPosition = vec4(0.0, 0.0, 0.0, 1.0);
+        
+        const vec3 materialAmb = vec3(1.0, 1.0, 1.0);
+        const vec3 materialDif = vec3(1.0, 1.0, 1.0);
+        const vec3 materialSpe = vec3(1.0, 1.0, 1.0);
+        const float shininess = 100000000.0;
+        const vec3 lightAmb = vec3(0.1, 0.1, 0.1); //sun m
+        const vec3 lightDif = vec3(0.7, 0.7, 0.7);
+        const vec3 lightSpe = vec3(1.0, 1.0, 1.0);
+        vec3 ambientColor = lightAmb * materialAmb;
+        vec3 diffuseColor = lightDif * materialDif;
+        vec3 specularColor = lightSpe * materialSpe;
+
+
+        attribute vec4 vPosition;
+        attribute vec3 vNormal;
+        attribute vec2 vTexCoord;
+
+
+        uniform mat4 mNormals;
+        uniform mat4 mViewNormals; // Matriz inversa da transposta de mView
+        uniform mat4 mModelView;
+        uniform mat4 mView;
+        uniform mat4 mProjection;
+        uniform float distance;
+
+        varying vec4 fColor;
+        varying vec2 fTexCoord;
+
+        void main() {
+            vec3 posC = (mModelView * vPosition).xyz;
+            vec3 L;
+
+            if(lightPosition.w == 0.0)
+                L = normalize((mViewNormals*lightPosition).xyz);
+            else
+                L = normalize((mView*lightPosition).xyz - posC);
+            vec3 V = vec3(0,0,distance);
+            vec3 H = normalize(L+V);
+            vec3 N = normalize((mNormals * vec4(vNormal, 1.0)).xyz);
+            float diffuseFactor = max( dot(L,N), 0.0 );
+            vec3 diffuse = diffuseFactor * diffuseColor;
+            float specularFactor = pow(max(dot(N,H), 0.0), shininess);
+            vec3 specular = specularFactor * specularColor;
+            if( dot(L,N) < 0.0 ) {
+                specular = vec3(0.0, 0.0, 0.0);
+            }
+            gl_Position = mProjection * mModelView * vPosition;
+            fColor = vec4(ambientColor + diffuse + specular, 1.0);
+            fTexCoord = vTexCoord;
+        }
+    </script>
+    <script id="gouraud-fragment" type="x-shader/x-fragment">
+        precision mediump float;
+
+        uniform vec4 color;
+        uniform bool noTexture;
+        varying vec3 fNormal;
+        varying vec2 fTexCoord;
+        uniform sampler2D texture;
+        uniform bool sun;
+
+        varying vec4 fColor;
+
+        void main() {
+            vec4 texTemp;
+            if (sun)
+                texTemp = texture2D(texture, fTexCoord);
+            else
+                texTemp = texture2D(texture, fTexCoord) * fColor;
+            if (noTexture)
+                gl_FragColor = fColor;
+            else
+                gl_FragColor = texTemp;
+
+        }
+    </script>
     
     <script type="text/javascript" src="Common/webgl-utils.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
@@ -165,6 +243,7 @@
                 <span id="months"></span> months
                 <span id="years"></span> years
                 <span id="seconds_start"></span> seconds since start
+                Using <span id="shading_method"></span> shading
         </div>
         <div id = "planetsContainer">
             <button id="sun" name = "sun">Sun</button>
