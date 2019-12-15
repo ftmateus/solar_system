@@ -25,46 +25,46 @@ var stop = false;
 var textures = true;
 
 
-const PLANET_SCALE = 10;
-const ORBIT_SCALE = 1/80;
+const PLANET_SCALE = 1;
+const ORBIT_SCALE = 1;
 
 var moons = {
-    MOON: {diameter: 3474*PLANET_SCALE, orbit: 363396*ORBIT_SCALE + 150000, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0), texture: null},
-    PHOBOS: {diameter:  11.2667*PLANET_SCALE*6, orbit: 9376*ORBIT_SCALE + 100000, year: 0.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    DEIMOS: {diameter:  12.4*PLANET_SCALE*6, orbit:  23455.5*ORBIT_SCALE + 150000, year: 1.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0) },
-    IO: {diameter: 3643*PLANET_SCALE, orbit: 421800*ORBIT_SCALE + 400000, year: 1.77, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    EUROPA: {diameter: 3122*PLANET_SCALE, orbit: 671100*ORBIT_SCALE + 500000, year: 3.55, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    GANIMEDES: {diameter: 5262*PLANET_SCALE, orbit: 1070400 *ORBIT_SCALE + 650000, year: 7.16 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    CALISTO: {diameter: 4821*PLANET_SCALE, orbit: 1882700*ORBIT_SCALE + 750000, year: 16.69 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    TITAN: {diameter: 5150*PLANET_SCALE, orbit: 1221870*ORBIT_SCALE + 750000, year: 16 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
-    REIA: {diameter: 1527*PLANET_SCALE, orbit: 527108*ORBIT_SCALE + 500000, year: 4.5 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
-    JAPETO: {diameter: 1470*PLANET_SCALE, orbit: 3560820*ORBIT_SCALE + 1500000, year: 79 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)}
+    MOON: {diameter: 3474, orbit: 363396, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0), texture: null},
+    PHOBOS: {diameter:  11.2667*6, orbit: 9376+ 100000, year: 0.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    DEIMOS: {diameter:  12.4*6, orbit:  23455.5+ 150000, year: 1.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0) },
+    IO: {diameter: 3643, orbit: 421800 + 400000, year: 1.77, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    EUROPA: {diameter: 3122, orbit: 671100+ 500000, year: 3.55, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    GANIMEDES: {diameter: 5262, orbit: 1070400  + 650000, year: 7.16 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    CALISTO: {diameter: 4821, orbit: 1882700 + 750000, year: 16.69 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
+    TITAN: {diameter: 5150, orbit: 1221870 + 750000, year: 16 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
+    REIA: {diameter: 1527, orbit: 527108+ 500000, year: 4.5 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
+    JAPETO: {diameter: 1470, orbit: 3560820 + 1500000, year: 79 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)}
 
 }
 
 var planets = {
-    MERCURY: {diameter: 4866*PLANET_SCALE, orbit: 57950000*ORBIT_SCALE, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0),
+    MERCURY: {diameter: 4866, orbit: 57950000, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0),
         texture: null},
-    VENUS: {diameter: 12106*PLANET_SCALE, orbit: 108110000*ORBIT_SCALE, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)
+    VENUS: {diameter: 12106, orbit: 108110000, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)
     , texture: null},
-    EARTH: {diameter: 12742*PLANET_SCALE, orbit: 149570000*ORBIT_SCALE, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.6, 1.0, 1.0), 
+    EARTH: {diameter: 12742, orbit: 149570000, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.6, 1.0, 1.0), 
         moons: [moons.MOON], texture: null},
-    MARS: {diameter: 6760*PLANET_SCALE, orbit: 227840000*ORBIT_SCALE, year: 687, day: 1.01, color: vec4(1.0, 0.3, 0.0, 1.0),
+    MARS: {diameter: 6760, orbit: 227840000, year: 687, day: 1.01, color: vec4(1.0, 0.3, 0.0, 1.0),
         moons: [moons.PHOBOS, moons.DEIMOS], texture: null},
-    JUPITER: {diameter: 142984*PLANET_SCALE/3, orbit: 778140000*ORBIT_SCALE, year: 12*365.26, day: 0.4, color: vec4(1.0, 1.0, 0.0, 1.0),
+    JUPITER: {diameter: 142984, orbit: 778140000, year: 12*365.26, day: 0.4, color: vec4(1.0, 1.0, 0.0, 1.0),
         moons: [moons.IO, moons.EUROPA, moons.GANIMEDES, moons.CALISTO], texture: null},
-    SATURN: {diameter: 120536*PLANET_SCALE/3, orbit: 1433449370*ORBIT_SCALE, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0),
+    SATURN: {diameter: 120536/3, orbit: 1433449370, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0),
         moons: [moons.TITAN, moons.REIA, moons.JAPETO], texture: null},
-    URANUS: {diameter: 51118*PLANET_SCALE/2, orbit: 2876679082*ORBIT_SCALE, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0),
+    URANUS: {diameter: 51118, orbit: 2876679082, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0),
         texture: null},
-    NEPTUNE: {diameter: 49528*PLANET_SCALE/2, orbit: 4503443661*ORBIT_SCALE, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0), 
+    NEPTUNE: {diameter: 49528, orbit: 4503443661, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0), 
         texture: null},
 }
 
 var SUN = {diameter:  1391900*0.8, orbit: 0, year: 0, day: 24.47, texture: null};
 
 
-const SUN_DIAMETER = 1391900*0.8;
+const SUN_DIAMETER = 1391900;
 const SUN_DAY = 24.47; // At the equator. The poles are slower as the sun is gaseous
 
 
@@ -75,7 +75,7 @@ const EARTH_DAY = 0.99726968;
 
 var center = SUN;
 
-const VP_DISTANCE = planets.NEPTUNE.orbit;
+const VP_DISTANCE = planets.NEPTUNE.orbit*10;
 var zoom = VP_DISTANCE/planets.EARTH.orbit;
 
 var request;
@@ -173,6 +173,9 @@ window.onload = function() {
     $('#saturn').bind('click', function() {center = planets.SATURN; if (time_increment == 0) animate();});
     $('#uranus').bind('click', function() {center = planets.URANUS; if (time_increment == 0) animate();});
     $('#neptune').bind('click', function() {center = planets.NEPTUNE; if (time_increment == 0) animate();});
+    canvas.addEventListener("mousedown",mouseDown);
+    canvas.addEventListener("mouseup",mouseUp);
+    canvas.addEventListener("mousemove",mouseMove);
 
     $('#v1').bind('click', function() {time_increment = 3*Math.pow(1, 3);});
     $('#v2').bind('click', function() {time_increment = 3*Math.pow(2, 3);});
@@ -277,18 +280,45 @@ function keyPress(ev)
         case "m": nextProgram = programGouraud; break;
     }
 }
+var isMoving;
+var startPos = vec2(0,0);
+var endPos = vec2(0,0);
+var currentCameraDistance = vec3(0,VP_DISTANCE,VP_DISTANCE)
+
+function getMousePos(canvas, ev) {
+    var x = -1 + 2 * ev.offsetX/canvas.width; 
+    var y = -1 + 2 * (canvas.height-ev.offsetY)/canvas.height;
+    return vec2(x*100000000,y*100000000);    
+}
+
+function mouseDown(ev) {
+    startPos = getMousePos(canvas, ev);
+    endPos = startPos;
+    isMoving = true;
+    
+}
+
+function mouseMove(ev) {
+    if (isMoving) endPos = getMousePos(canvas, ev);
+    currentCameraDistance[0] += endPos[0] - startPos[0];
+    currentCameraDistance[1] += endPos[1] - startPos[1];
+}
+
+function mouseUp(ev) {
+    endPos = startPos = vec2(0,0);
+    isMoving = false;
+}
 
 function moveCamera()
 {
-    var projection =mult(ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-3*VP_DISTANCE,3*VP_DISTANCE),
+    var projection =mult(ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-100*VP_DISTANCE,100*VP_DISTANCE),
     scalem(zoom, zoom, 1));
     
     var theta = center.year == 0 ? 0 : radians(global_time/center.year);
     
-    var x = center.orbit*Math.cos(theta);
-    var y = center.orbit*Math.sin(theta);
-    modelView = plane_floor ? PLANE_FLOOR : lookAt([0,VP_DISTANCE,VP_DISTANCE], 
-        [x,0,-y], [0,1,0]);
+    var x = center.orbit*Math.cos(theta)*ORBIT_SCALE;
+    var y = center.orbit*Math.sin(theta)*ORBIT_SCALE;
+    modelView = plane_floor ? PLANE_FLOOR : lookAt(currentCameraDistance, [x,0,-y], [0,1,0]);
 
     gl.uniformMatrix4fv(mViewLoc, false, flatten(modelView));
     gl.uniformMatrix4fv(mViewNormalsLoc, false, flatten(normalMatrix(modelView, false)));
@@ -339,9 +369,9 @@ function addPlanet(planet)
     gl.uniform1i(sunLoc, 0);
     pushMatrix();
         multRotationY(global_time/planet.year);
-        multTranslation([(planet.orbit), 0, 0]);
+        multTranslation([(planet.orbit*ORBIT_SCALE), 0, 0]);
         pushMatrix();
-            multScale([ planet.diameter, planet.diameter, planet.diameter]);
+            multScale([ planet.diameter*PLANET_SCALE, planet.diameter*PLANET_SCALE, planet.diameter*PLANET_SCALE]);
             multRotationY(global_time/planet.day);
             drawPlanet(planet.color, textures && isFilled ? planet.texture : null, planet.distance);
         popMatrix();
@@ -349,7 +379,7 @@ function addPlanet(planet)
         {
             pushMatrix();
                 multRotationX(-30);
-                multScale([planet.diameter*1.8, 0, planet.diameter*1.8]);
+                multScale([planet.diameter*1.8*PLANET_SCALE, 0, planet.diameter*1.8*PLANET_SCALE]);
                 drawRings();
             popMatrix();
         }
@@ -360,9 +390,9 @@ function addPlanet(planet)
                 pushMatrix();
                     multRotationX(-30);
                     multRotationY(global_time/moon.year);
-                    multTranslation([(moon.orbit), 0, 0]);
+                    multTranslation([(moon.orbit*ORBIT_SCALE*PLANET_SCALE), 0, 0]);
                     pushMatrix();
-                        multScale([ moon.diameter, moon.diameter, moon.diameter]);
+                        multScale([ moon.diameter*PLANET_SCALE, moon.diameter*PLANET_SCALE, moon.diameter*PLANET_SCALE]);
                         drawPlanet(moon.color, textures && isFilled  ? moon.texture : null, planet.distance);
                     popMatrix();
                 popMatrix();
