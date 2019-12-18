@@ -184,9 +184,9 @@ window.onload = function() {
     $('#saturn').bind('click', function() {center = planets.SATURN; if (time_increment == 0) animate();});
     $('#uranus').bind('click', function() {center = planets.URANUS; if (time_increment == 0) animate();});
     $('#neptune').bind('click', function() {center = planets.NEPTUNE; if (time_increment == 0) animate();});
-    canvas.addEventListener("mousedown",mouseDown);
-    canvas.addEventListener("mouseup",mouseUp);
-    canvas.addEventListener("mousemove",mouseMove);
+    // canvas.addEventListener("mousedown",mouseDown);
+    // canvas.addEventListener("mouseup",mouseUp);
+    // canvas.addEventListener("mousemove",mouseMove);
 
     $('#v1').bind('click', function() {time_increment = Math.pow(1, 3);});
     $('#v2').bind('click', function() {time_increment = Math.pow(2, 3);});
