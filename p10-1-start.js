@@ -25,9 +25,11 @@ var stop = false;
 var textures = true;
 
 
-var planet_scale = 1;
-var orbit_scale = 1;
+var planet_scale = 10;
+var orbit_scale = 1/40;
 var orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
+
+var solar_system_data;
 
 var moons = {
     MOON: {diameter: 3474, orbit: 363396, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0), texture: null},
@@ -83,7 +85,7 @@ var request;
 
 
 const REFRESH_RATE = 60;
-var time_increment = 6;
+var time_increment = 1;
 
 const PLANE_FLOOR = rotateX(90);
 
@@ -151,6 +153,14 @@ window.onload = function() {
     sphereInit(gl, 250, 100);
     torusInit(gl);
 
+
+    // fr = new FileReader();
+    // fr.onload = function(e)
+    // {
+    //     let lines = e.target.result;
+    //     solar_system_data = JSON.parse(lines); 
+    // };
+    // fr.readAsText("solar_system.json");
     setupPlanetsTextures();
 
     this.start_time = new Date().getTime();
@@ -178,13 +188,25 @@ window.onload = function() {
     canvas.addEventListener("mouseup",mouseUp);
     canvas.addEventListener("mousemove",mouseMove);
 
-    $('#v1').bind('click', function() {time_increment = 3*Math.pow(1, 3);});
-    $('#v2').bind('click', function() {time_increment = 3*Math.pow(2, 3);});
-    $('#v3').bind('click', function() {time_increment = 3*Math.pow(3, 3);});
+    $('#v1').bind('click', function() {time_increment = Math.pow(1, 3);});
+    $('#v2').bind('click', function() {time_increment = Math.pow(2, 3);});
+    $('#v3').bind('click', function() {time_increment = Math.pow(3, 3);});
+    $('#v9').bind('click', function() {time_increment = Math.pow(9, 3);});
+    $('#resetScale').bind('click', function() {
+        planet_scale = document.getElementById("planetRange").value = 10;
+        orbit_scale = document.getElementById("orbitRange").value = 0.025;
+        orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
+    });
+    $('#realScale').bind('click', function() {
+        planet_scale = document.getElementById("planetRange").value = 1;
+        orbit_scale = document.getElementById("orbitRange").value = 1;
+        orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
+    });
 
     document.getElementById("scalesContainer").addEventListener("input", function(){
         planet_scale = document.getElementById("planetRange").value;
         orbit_scale = document.getElementById("orbitRange").value;
+        orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
     });
 
     // document.addEventListener("visibilitychange", function() {

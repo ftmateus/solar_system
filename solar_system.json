@@ -1,0 +1,192 @@
+[
+    {
+        "name": "Sun",
+        "type": "star",
+        "diameter": 1391900,
+        "day": 24.47,
+        "color": [1.0, 1.0, 1.0, 1.0],
+        "texture_src": "2k_sun.jpg",
+        "texture": null
+    },
+    {
+        "name": "Mercury",
+        "type": "planet",
+        "diameter": 4866,
+        "orbit": 57950000,
+        "year": 87.97,
+        "day": 58.646,
+        "color": [1.0, 1.0, 1.0, 1.0],
+        "texture_src": "2k_mercury.jpg",
+        "texture": null
+    },
+    {
+        "name": "Venus",
+        "type": "planet",
+        "diameter": 12106,
+        "orbit": 108110000,
+        "year": 224.70,
+        "day": 243.018,
+        "color": [1.0, 0.8, 0.0, 1.0],
+        "texture_src": "2k_venus_atmosphere.jpg",
+        "texture": null
+    },
+    {
+        "name": "Earth",
+        "type": "planet",
+        "diameter": 12742,
+        "orbit": 149570000,
+        "year": 365.26,
+        "day": 0.99726968,
+        "color": [0.0, 0.6, 1.0, 1.0],
+        "texture_src": "2k_earth_daymap.jpg",
+        "texture": null,
+        "moons": 
+        [
+            {
+                "name": "Moon",
+                "type": "moon",
+                "diameter": 3474,
+                "orbit": 363396,
+                "year": 28,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": "2k_moon.jpg",
+                "texture": null
+            }
+        ]
+    },
+    {
+        "name": "Mars",
+        "type": "planet",
+        "diameter": 12742,
+        "orbit": 149570000,
+        "year": 365.26,
+        "day": 0.99726968,
+        "color": [1.0, 0.3, 0.0, 1.0],
+        "texture_src": "2k_mars.jpg",
+        "texture": null,
+        "moons": 
+        [
+            {
+                "name": "Phobos",
+                "type": "moon",
+                "diameter": 11.2667,
+                "scale": 6,
+                "orbit": 9376,
+                "year": 0.3,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": "2k_moon.jpg",
+                "texture": null
+            },
+            {
+                "name": "Deimos",
+                "type": "moon",
+                "diameter": 12.4,
+                "scale": 6,
+                "orbit": 23455.5,
+                "year": 1.3,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": "2k_moon.jpg",
+                "texture": null
+            }
+        ]
+    },
+    {
+        "name": "Jupiter",
+        "type": "planet",
+        "diameter": 142984,
+        "orbit": 778140000,
+        "year": 4383.12,
+        "day": 0.4,
+        "color": [1.0, 1.0, 0.0, 1.0],
+        "texture_src": "2k_jupiter.jpg",
+        "texture": null,
+        "moons":
+        [
+            {
+                "name": "Io",
+                "type": "moon",
+                "diameter": 3643,
+                "orbit": 421800,
+                "year": 1.7,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": null,
+                "texture": null
+            },   
+            {
+                "name": "Europa",
+                "type": "moon",
+                "diameter": 3122,
+                "orbit": 671100,
+                "year": 3.55,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": null,
+                "texture": null
+            },   
+            {
+                "name": "Ganimedes",
+                "type": "moon",
+                "diameter": 5262,
+                "orbit": 1070400,
+                "year": 7.16,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": null,
+                "texture": null
+            },   
+            {
+                "name": "Calisto",
+                "type": "moon",
+                "diameter": 4821,
+                "orbit": 1882700,
+                "year": 16.69,
+                "color": [1.0, 1.0, 1.0, 1.0],
+                "texture_src": null,
+                "texture": null
+            }
+        ]
+    },
+    {
+        "name": "Saturn",
+        "type": "planet",
+        "diameter": 120536,
+        "orbit": 1433449370,
+        "year": 10592.54,
+        "day":  0.42,
+        "color": [1.0, 1.0, 0.0, 1.0],
+        "texture_src": "2k_saturn.jpg",
+        "texture": null,
+        "moons":
+        [
+            
+        ]
+    },
+    {
+        "name": "Uranus",
+        "type": "planet",
+        "diameter": 51118,
+        "orbit": 2876679082,
+        "year": 30681.84,
+        "day": 0.72,
+        "color": [0.0, 1.0, 1.0, 1.0],
+        "texture_src": "2k_uranus.jpg",
+        "texture": null,
+        "moons":
+        [
+            
+        ]
+    },
+    {
+        "name": "Neptune",
+        "type": "planet",
+        "diameter": 49528,
+        "orbit": 4503443661,
+        "year": 60267.9,
+        "day": 0.65,
+        "color": [0.0, 0.3, 1.0, 1.0],
+        "texture_src": "2k_neptune.jpg",
+        "texture": null,
+        "moons":
+        [
+            
+        ]
+    }
+]
