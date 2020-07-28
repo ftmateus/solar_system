@@ -21,6 +21,15 @@ const ZBUFFER_KEY = 'z', BACKFACE_CULLING_KEY = 'b';
 const WIRED_FRAME_KEY = 'w', FILLED_KEY = 'f';
 const TIME_STOP_KEY = ' ';
 
+const help_msg = "Keys:\n" +
+                "0/1/2/3/9 - Time increase\n" +
+                (TIME_STOP_KEY == " " ? "Space" : TIME_STOP_KEY) + " - stop time increase\n" +
+                ZBUFFER_KEY + " - switch zbuffer\n" +
+                BACKFACE_CULLING_KEY + " - switch backface culling\n" +
+                WIRED_FRAME_KEY + " - wired frame\n" + 
+                FILLED_KEY  + " - filled\n"
+                ;
+
 var plane_floor = false;
 var stop = false;
 var textures = true;
@@ -154,6 +163,10 @@ window.onload = function() {
         orbit_scale = document.getElementById("orbitRange").value = 1;
         orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
     });
+    $('#help').bind('click', function() {
+        alert(help_msg);
+    });
+
 
     document.getElementById("scalesContainer").addEventListener("input", function(){
         planet_scale = document.getElementById("planetRange").value;
