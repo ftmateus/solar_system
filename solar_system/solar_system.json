@@ -1,14 +1,16 @@
-[
-    {
+{
+    "Sun": {
         "name": "Sun",
         "type": "star",
         "diameter": 1391900,
+        "orbit": 0,
+        "year": 0,
         "day": 24.47,
         "color": [1.0, 1.0, 1.0, 1.0],
         "texture_src": "2k_sun.jpg",
         "texture": null
     },
-    {
+    "Mercury": {
         "name": "Mercury",
         "type": "planet",
         "diameter": 4866,
@@ -19,7 +21,7 @@
         "texture_src": "2k_mercury.jpg",
         "texture": null
     },
-    {
+    "Venus": {
         "name": "Venus",
         "type": "planet",
         "diameter": 12106,
@@ -30,7 +32,7 @@
         "texture_src": "2k_venus_atmosphere.jpg",
         "texture": null
     },
-    {
+    "Earth": {
         "name": "Earth",
         "type": "planet",
         "diameter": 12742,
@@ -41,8 +43,8 @@
         "texture_src": "2k_earth_daymap.jpg",
         "texture": null,
         "moons": 
-        [
-            {
+        {
+            "Moon": {
                 "name": "Moon",
                 "type": "moon",
                 "diameter": 3474,
@@ -52,21 +54,21 @@
                 "texture_src": "2k_moon.jpg",
                 "texture": null
             }
-        ]
+        }
     },
-    {
+    "Mars": {
         "name": "Mars",
         "type": "planet",
-        "diameter": 12742,
-        "orbit": 149570000,
-        "year": 365.26,
-        "day": 0.99726968,
+        "diameter": 6778,
+        "orbit": 227939200,
+        "year": 686.971,
+        "day": 1.025,
         "color": [1.0, 0.3, 0.0, 1.0],
         "texture_src": "2k_mars.jpg",
         "texture": null,
         "moons": 
-        [
-            {
+        {
+            "Phobos": {
                 "name": "Phobos",
                 "type": "moon",
                 "diameter": 11.2667,
@@ -77,7 +79,7 @@
                 "texture_src": "2k_moon.jpg",
                 "texture": null
             },
-            {
+            "Deimos": {
                 "name": "Deimos",
                 "type": "moon",
                 "diameter": 12.4,
@@ -88,9 +90,9 @@
                 "texture_src": "2k_moon.jpg",
                 "texture": null
             }
-        ]
+        }
     },
-    {
+    "Jupiter": {
         "name": "Jupiter",
         "type": "planet",
         "diameter": 142984,
@@ -101,8 +103,8 @@
         "texture_src": "2k_jupiter.jpg",
         "texture": null,
         "moons":
-        [
-            {
+        {
+            "Io": {
                 "name": "Io",
                 "type": "moon",
                 "diameter": 3643,
@@ -112,7 +114,7 @@
                 "texture_src": null,
                 "texture": null
             },   
-            {
+            "Europa": {
                 "name": "Europa",
                 "type": "moon",
                 "diameter": 3122,
@@ -122,7 +124,7 @@
                 "texture_src": null,
                 "texture": null
             },   
-            {
+            "Ganimedes": {
                 "name": "Ganimedes",
                 "type": "moon",
                 "diameter": 5262,
@@ -132,7 +134,7 @@
                 "texture_src": null,
                 "texture": null
             },   
-            {
+            "Calisto" : {
                 "name": "Calisto",
                 "type": "moon",
                 "diameter": 4821,
@@ -142,9 +144,9 @@
                 "texture_src": null,
                 "texture": null
             }
-        ]
+        }
     },
-    {
+    "Saturn": {
         "name": "Saturn",
         "type": "planet",
         "diameter": 120536,
@@ -159,7 +161,7 @@
             
         ]
     },
-    {
+    "Uranus": {
         "name": "Uranus",
         "type": "planet",
         "diameter": 51118,
@@ -174,7 +176,7 @@
             
         ]
     },
-    {
+    "Neptune": {
         "name": "Neptune",
         "type": "planet",
         "diameter": 49528,
@@ -189,4 +191,4 @@
             
         ]
     }
-]
+}

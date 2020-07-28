@@ -23,7 +23,6 @@
     #planetsContainer {
         position: absolute;
         top:0;
-        left: 0;
         right: 0;
         display: table;
         margin: auto;
@@ -258,7 +257,7 @@
     <script type="text/javascript" src="Common/torus.js"></script>
     <script type="text/javascript" src="Common/bunny.js"></script>
     <script type="text/javascript" src="Common/bunny-data.js"></script>
-    <script type="text/javascript" src="solar_system.json"></script>
+    <script type="text/json" src="solar_system/solar_system.json"></script>
     <script type="text/javascript" src="p10-1-start.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript" src="hammer.js"></script>
@@ -271,7 +270,7 @@
                 <span id="seconds_start"></span> seconds since start
                 Using <span id="shading_method"></span> shading
         </div>
-        <div id = "planetsContainer">
+        <div id = "planetsContainer"><!--
             <button id="sun" name = "sun">Sun</button>
             <button id="mercury" name = "mercury">Mercury</button>
             <button id="venus" name = "venus">Venus</button>
@@ -280,16 +279,17 @@
             <button id="jupiter" name = "jupiter">Jupiter</button>
             <button id="saturn" name = "saturn">Saturn</button>
             <button id="uranus" name = "uranus">Uranus</button>
-            <button id="neptune" name = "neptune">Neptune</button>
+            <button id="neptune" name = "neptune">Neptune</button></-->
         </div>
         <div id = "timeContainer" >
             Time increase: 
+            <button id = "v0">0</button>
             <button id = "v1">1</button>
             <button id = "v2">2</button>
             <button id = "v3">3</button>
             <button id = "v9">9</button>
         </div>
-        <canvas id="gl-canvas" width="100%" height="100%" style="background: url('textures/2k_stars_milky_way.jpg')">
+        <canvas id="gl-canvas" width="100%" height="100%" style="background: url('solar_system/2k_stars_milky_way.jpg')">
             Ooops! Your browser doen't support WebGL!
         </canvas>
         <div id="scalesContainer" class = "slidersStyle"> 

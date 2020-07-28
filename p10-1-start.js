@@ -19,6 +19,7 @@ var isFilled = true, cullFace = false, zBuffer = false;
 
 const ZBUFFER_KEY = 'z', BACKFACE_CULLING_KEY = 'b';
 const WIRED_FRAME_KEY = 'w', FILLED_KEY = 'f';
+const TIME_STOP_KEY = ' ';
 
 var plane_floor = false;
 var stop = false;
@@ -31,42 +32,6 @@ var orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100)
 
 var solar_system_data;
 
-var moons = {
-    MOON: {diameter: 3474, orbit: 363396, year: 28, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0), texture: null},
-    PHOBOS: {diameter:  11.2667*6, orbit: 9376, year: 0.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    DEIMOS: {diameter:  12.4*6, orbit:  23455.5, year: 1.3, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0) },
-    IO: {diameter: 3643, orbit: 421800, year: 1.77, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    EUROPA: {diameter: 3122, orbit: 671100, year: 3.55, day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    GANIMEDES: {diameter: 5262, orbit: 1070400, year: 7.16 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    CALISTO: {diameter: 4821, orbit: 1882700, year: 16.69 , day: 0, color: vec4(1.0, 1.0, 1.0, 1.0)},
-    TITAN: {diameter: 5150, orbit: 1221870, year: 16 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
-    REIA: {diameter: 1527, orbit: 527108, year: 4.5 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)},
-    JAPETO: {diameter: 1470, orbit: 3560820, year: 79 , day: 0, color: vec4(1.0, 1.0, 0.0, 1.0)}
-
-}
-
-var planets = {
-    MERCURY: {diameter: 4866, orbit: 57950000, year: 87.97, day: 58.646, color: vec4(1.0, 1.0, 1.0, 1.0),
-        texture: null},
-    VENUS: {diameter: 12106, orbit: 108110000, year: 224.70, day: 243.018, color: vec4(1.0, 0.8, 0.0, 1.0)
-    , texture: null},
-    EARTH: {diameter: 12742, orbit: 149570000, year: 365.26, day: 0.99726968, color: vec4(0.0, 0.6, 1.0, 1.0), 
-        moons: [moons.MOON], texture: null},
-    MARS: {diameter: 6760, orbit: 227840000, year: 687, day: 1.01, color: vec4(1.0, 0.3, 0.0, 1.0),
-        moons: [moons.PHOBOS, moons.DEIMOS], texture: null},
-    JUPITER: {diameter: 142984, orbit: 778140000, year: 12*365.26, day: 0.4, color: vec4(1.0, 1.0, 0.0, 1.0),
-        moons: [moons.IO, moons.EUROPA, moons.GANIMEDES, moons.CALISTO], texture: null},
-    SATURN: {diameter: 120536, orbit: 1433449370, year: 29*365.26, day: 0.42, color: vec4(1.0, 1.0, 0.0, 1.0),
-        moons: [moons.TITAN, moons.REIA, moons.JAPETO], texture: null},
-    URANUS: {diameter: 51118, orbit: 2876679082, year: 84*365.26, day: 0.72, color: vec4(0.0, 1.0, 1.0, 1.0),
-        texture: null},
-    NEPTUNE: {diameter: 49528, orbit: 4503443661, year: 165*365.26, day: 0.65, color: vec4(0.0, 0.3, 1.0, 1.0), 
-        texture: null},
-}
-
-var SUN = {diameter:  1391900, orbit: 0, year: 0, day: 24.47, texture: null};
-
-
 const SUN_DIAMETER = 1391900;
 const SUN_DAY = 24.47; // At the equator. The poles are slower as the sun is gaseous
 
@@ -76,10 +41,10 @@ const EARTH_ORBIT = 149570000*orbit_scale;
 const EARTH_YEAR = 365.26;
 const EARTH_DAY = 0.99726968;
 
-var center = SUN;
+var center;
 
-const VP_DISTANCE = planets.NEPTUNE.orbit*10;
-var zoom = VP_DISTANCE/planets.EARTH.orbit;
+var VP_DISTANCE = 100000000000;
+var zoom = 0;
 
 var request;
 
@@ -137,6 +102,9 @@ window.onresize = function () {
 }
 
 window.onload = function() {
+
+    loadSolarSystem()
+
     canvas = document.getElementById('gl-canvas');
 
     gl = WebGLUtils.setupWebGL(document.getElementById('gl-canvas'));
@@ -153,14 +121,6 @@ window.onload = function() {
     sphereInit(gl, 250, 100);
     torusInit(gl);
 
-
-    // fr = new FileReader();
-    // fr.onload = function(e)
-    // {
-    //     let lines = e.target.result;
-    //     solar_system_data = JSON.parse(lines); 
-    // };
-    // fr.readAsText("solar_system.json");
     setupPlanetsTextures();
 
     this.start_time = new Date().getTime();
@@ -175,19 +135,11 @@ window.onload = function() {
     });
 
     //this.document.getElementById("sun").addEventListener("click", function() {center = SUN});
-    $('#sun').bind('click', function() {center = SUN; if (time_increment == 0); animate();});
-    $('#mercury').bind('click', function() {center = planets.MERCURY; if (time_increment == 0) animate();});
-    $('#venus').bind('click', function() {center = planets.VENUS; if (time_increment == 0) animate();});
-    $('#earth').bind('click', function() {center = planets.EARTH; if (time_increment == 0) animate(); });
-    $('#mars').bind('click', function() {center = planets.MARS; if (time_increment == 0) animate();});
-    $('#jupiter').bind('click', function() {center = planets.JUPITER; if (time_increment == 0) animate();});
-    $('#saturn').bind('click', function() {center = planets.SATURN; if (time_increment == 0) animate();});
-    $('#uranus').bind('click', function() {center = planets.URANUS; if (time_increment == 0) animate();});
-    $('#neptune').bind('click', function() {center = planets.NEPTUNE; if (time_increment == 0) animate();});
-    // canvas.addEventListener("mousedown",mouseDown);
-    // canvas.addEventListener("mouseup",mouseUp);
-    // canvas.addEventListener("mousemove",mouseMove);
 
+
+    addBodiesButtons();
+
+    $('#v0').bind('click', function() {time_increment = Math.pow(0, 3);});
     $('#v1').bind('click', function() {time_increment = Math.pow(1, 3);});
     $('#v2').bind('click', function() {time_increment = Math.pow(2, 3);});
     $('#v3').bind('click', function() {time_increment = Math.pow(3, 3);});
@@ -216,6 +168,42 @@ window.onload = function() {
     render();
 }
 
+function addBodiesButtons()
+{
+    
+    for(const [bodyName, body] of Object.entries(solar_system_data))
+    {
+        createCelestialBodyButton(body);
+    }
+}
+
+function createCelestialBodyButton(body)
+{
+    const container = document.getElementById('planetsContainer');
+    const button = document.createElement("button");
+    button.innerText = body.name;
+    container.appendChild(button);   
+    button.addEventListener("click", function() {center = body; if (time_increment == 0) animate();});
+}
+
+
+function loadSolarSystem()
+{
+    $.ajax({
+        url: "solar_system/solar_system.json",
+        dataType: "json",
+        success: function(response) {
+            solar_system_data = response;
+        },
+        async: false
+    })
+    console.log(solar_system_data);
+    center = solar_system_data.Sun;
+    VP_DISTANCE = solar_system_data.Neptune.orbit*10;
+    zoom = VP_DISTANCE/solar_system_data.Earth.orbit;
+    
+}
+
 function switchShading()
 {
     currentProgram = nextProgram;
@@ -235,21 +223,23 @@ function switchShading()
 
 function setupPlanetsTextures()
 {
-    planets.MERCURY.texture = setupTexture("2k_mercury.jpg");
-    planets.VENUS.texture = setupTexture("2k_venus_atmosphere.jpg");
-    planets.EARTH.texture = setupTexture("2k_earth_daymap.jpg");
-    planets.MARS.texture = setupTexture("2k_mars.jpg");
-    planets.JUPITER.texture = setupTexture("2k_jupiter.jpg");
-    planets.SATURN.texture = setupTexture("2k_saturn.jpg");
-    planets.URANUS.texture = setupTexture("2k_uranus.jpg");
-    planets.NEPTUNE.texture = setupTexture("2k_neptune.jpg");
-    SUN.texture = setupTexture("2k_sun.jpg");
-    moons.MOON.texture = setupTexture("2k_moon.jpg");
+    for(const [bodyName, body] of Object.entries(solar_system_data))
+    {
+        body.texture = setupTexture(body.texture_src);
+        if(body.moons != null)
+        {
+            for (const [moonname, moon] of Object.entries(body.moons))
+            {
+                moon.texture = setupTexture(moon.texture_src);
+            }
+        }
+    }
 }
 
 
 function setupTexture(imagesrc)
 {
+    if(imagesrc == null) return;
         // Create a texture.
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -258,7 +248,7 @@ function setupTexture(imagesrc)
     new Uint8Array([0, 255, 0, 128]));
     // Asynchronously load an image
     var image = new Image();
-    image.src = "textures/" + imagesrc;
+    image.src = "solar_system/" + imagesrc;
     image.addEventListener('load', function() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -297,9 +287,9 @@ function keyPress(ev)
             else gl.disable(gl.DEPTH_TEST);
         break;
         case "9": case "3": case "2":
-        case "1": case "0": 
+        case "1": case "0": case " ":
         let wasAnimated = time_increment != 0;
-        time_increment = Math.pow(parseInt(ev.key), 3);
+        time_increment = Math.pow(parseInt(ev.key == " " ? 0 : ev.key) , 3);
         if (!wasAnimated) animate();
         break;
         case "p": plane_floor = !plane_floor; break;
@@ -359,16 +349,15 @@ function animate()
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     moveCamera();
 
-    addPlanet(planets.NEPTUNE);
-    addPlanet(planets.URANUS);
-    addPlanet(planets.SATURN);
-    addPlanet(planets.JUPITER);
-    addPlanet(planets.MARS);
-    addPlanet(planets.EARTH);
-    addPlanet(planets.VENUS);
-    addPlanet(planets.MERCURY);
-    sun();
-
+    for(const [bodyName, body] of Object.entries(solar_system_data))
+    {
+        switch(body.type)
+        {
+            case "planet": addPlanet(body); break;
+            case "star": addStar(body); break;
+            default: alert("unknown body type")
+        }
+    }
     global_time += time_increment;
 
     renderOverlay();
@@ -403,7 +392,7 @@ function addPlanet(planet)
             multRotationY(global_time/planet.day);
             drawPlanet(planet.color, textures && isFilled ? planet.texture : null, planet.distance);
         popMatrix();
-        if (planet == planets.SATURN)
+        if (planet == solar_system_data.Saturn)
         {
             pushMatrix();
                 multRotationX(-30);
@@ -413,7 +402,7 @@ function addPlanet(planet)
         }
         if (planet.moons != null)
         {
-            for (var moon of planet.moons)
+            for (const [moonname, moon] of Object.entries(planet.moons))
             {
                 pushMatrix();
                     multRotationX(-30);
@@ -433,20 +422,19 @@ function addPlanet(planet)
     popMatrix();
 }
 
-function sun()
+function addStar(star)
 {
     gl.uniform1i(sunLoc, 1);
     pushMatrix();
         pushMatrix();
-        multScale([ SUN_DIAMETER, SUN_DIAMETER, SUN_DIAMETER]);
-        multRotationY(global_time/SUN_DAY);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? SUN.texture : null, 0);
+        multScale([ star.diameter, star.diameter, star.diameter]);
+        multRotationY(global_time/star.day);
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? star.texture : null, 0);
         popMatrix();
     popMatrix();
 }
 function drawPlanet(color, texture = null, distance)
 {
-
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
     gl.uniform4fv(colorLoc, color);
@@ -463,7 +451,7 @@ function drawRings()
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniform1i(noTextureLoc, 1);
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
-    gl.uniform4fv(colorLoc, planets.SATURN.color);
+    gl.uniform4fv(colorLoc, solar_system_data.Saturn.color);
     if (isFilled)
         torusDrawFilled(gl, currentProgram);
     else 
