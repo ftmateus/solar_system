@@ -1,1 +1,1 @@
-https://ftmateus.github.io/solar_system_cgi/
+https://ftmateus.github.io/solar_system/
