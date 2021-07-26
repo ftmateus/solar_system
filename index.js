@@ -184,7 +184,7 @@ window.onload = function() {
 function addBodiesButtons()
 {
     
-    for(const [bodyName, body] of Object.entries(solar_system_data))
+    for(const [_, body] of Object.entries(solar_system_data.bodies))
     {
         createCelestialBodyButton(body);
     }
@@ -195,6 +195,8 @@ function createCelestialBodyButton(body)
     const container = document.getElementById('planetsContainer');
     const button = document.createElement("button");
     button.innerText = body.name;
+    //bootstrap
+    button.className += "btn btn-primary"
     container.appendChild(button);   
     button.addEventListener("click", function() {center = body; if (time_increment == 0) animate();});
 }
@@ -211,10 +213,10 @@ function loadSolarSystem()
         async: false
     })
     console.log(solar_system_data);
-    center = solar_system_data.Sun;
-    VP_DISTANCE = solar_system_data.Neptune.orbit*10;
-    zoom = VP_DISTANCE/solar_system_data.Earth.orbit;
-    
+    center = solar_system_data.bodies[solar_system_data.properties.center];
+    VP_DISTANCE = solar_system_data.properties.vp_distance
+    //zoom = VP_DISTANCE/solar_system_data.bodies.Earth.orbit;
+    zoom = solar_system_data.properties.zoom
 }
 
 function switchShading()
@@ -236,12 +238,12 @@ function switchShading()
 
 function setupPlanetsTextures()
 {
-    for(const [bodyName, body] of Object.entries(solar_system_data))
+    for(const [_, body] of Object.entries(solar_system_data.bodies))
     {
         body.texture = setupTexture(body.texture_src);
-        if(body.moons != null)
+        if(body.moons)
         {
-            for (const [moonname, moon] of Object.entries(body.moons))
+            for (const [_, moon] of Object.entries(body.moons))
             {
                 moon.texture = setupTexture(moon.texture_src);
             }
@@ -252,7 +254,7 @@ function setupPlanetsTextures()
 
 function setupTexture(imagesrc)
 {
-    if(imagesrc == null) return;
+    if(!imagesrc) return;
         // Create a texture.
     var texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -362,7 +364,7 @@ function animate()
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     moveCamera();
 
-    for(const [bodyName, body] of Object.entries(solar_system_data))
+    for(const [_, body] of Object.entries(solar_system_data.bodies))
     {
         switch(body.type)
         {
@@ -380,7 +382,7 @@ function animate()
 
 function render() 
 {
-    if (time_increment != 0)
+    if (time_increment > 0)
         animate();
     else
         cancelAnimationFrame(request);
@@ -405,7 +407,7 @@ function addPlanet(planet)
             multRotationY(global_time/planet.day);
             drawPlanet(planet.color, textures && isFilled ? planet.texture : null, planet.distance);
         popMatrix();
-        if (planet == solar_system_data.Saturn)
+        if (planet.rings)
         {
             pushMatrix();
                 multRotationX(-30);
@@ -464,7 +466,7 @@ function drawRings()
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniform1i(noTextureLoc, 1);
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
-    gl.uniform4fv(colorLoc, solar_system_data.Saturn.color);
+    gl.uniform4fv(colorLoc, solar_system_data.bodies.Saturn.color);
     if (isFilled)
         torusDrawFilled(gl, currentProgram);
     else 
