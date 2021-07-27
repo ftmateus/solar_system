@@ -11,6 +11,8 @@ distanceLoc;
 var matrixStack = [];
 var modelView;
 
+let time_increments = [0, 1, 2, 3, 9]
+
 var global_time = 0;
 
 var start_time;
@@ -59,7 +61,7 @@ var request;
 
 
 const REFRESH_RATE = 60;
-var time_increment = 1;
+var time_increment = 0;
 
 const PLANE_FLOOR = rotateX(90);
 
@@ -110,6 +112,13 @@ window.onresize = function () {
     fit_canvas_to_window();
 }
 
+function change_time_increment(inc)
+{
+    let wasAnimated = time_increment != 0;
+    time_increment = Math.pow(parseInt(inc == " " ? 0 : inc) , 3);
+    if (!wasAnimated) animate();
+}
+
 window.onload = function() {
 
     loadSolarSystem()
@@ -123,8 +132,8 @@ window.onload = function() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    programPhong = initShaders(gl, 'phong-vertex', 'phong-fragment');
-    programGouraud = initShaders(gl, 'gouraud-vertex', 'gouraud-fragment');
+    programPhong = initShaders(gl, './phong_v_shader.glsl', './phong_f_shader.glsl');
+    programGouraud = initShaders(gl, './gouraud_v_shader.glsl', './gouraud_f_shader.glsl');
     nextProgram = programPhong;
 
     sphereInit(gl, 250, 100);
@@ -148,11 +157,10 @@ window.onload = function() {
 
     addBodiesButtons();
 
-    $('#v0').bind('click', function() {time_increment = Math.pow(0, 3);});
-    $('#v1').bind('click', function() {time_increment = Math.pow(1, 3);});
-    $('#v2').bind('click', function() {time_increment = Math.pow(2, 3);});
-    $('#v3').bind('click', function() {time_increment = Math.pow(3, 3);});
-    $('#v9').bind('click', function() {time_increment = Math.pow(9, 3);});
+
+    for(let inc of time_increments)
+        $('#v' + inc).bind('click', () => change_time_increment(inc));
+
     $('#resetScale').bind('click', function() {
         planet_scale = document.getElementById("planetRange").value = 10;
         orbit_scale = document.getElementById("orbitRange").value = 0.025;
@@ -303,9 +311,7 @@ function keyPress(ev)
         break;
         case "9": case "3": case "2":
         case "1": case "0": case " ":
-        let wasAnimated = time_increment != 0;
-        time_increment = Math.pow(parseInt(ev.key == " " ? 0 : ev.key) , 3);
-        if (!wasAnimated) animate();
+            change_time_increment(ev.key)
         break;
         case "p": plane_floor = !plane_floor; break;
         case "t": textures = !textures; break;
@@ -370,7 +376,7 @@ function animate()
         {
             case "planet": addPlanet(body); break;
             case "star": addStar(body); break;
-            default: alert("unknown body type")
+            default: console.assert(false, "Unknown body type!")
         }
     }
     global_time += time_increment;
