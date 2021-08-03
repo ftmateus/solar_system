@@ -1,10 +1,7 @@
 {
-    "properties":
-    {
-        "center": "Sun",
-        "vp_distance": 45034436610,
-        "zoom": 20000
-    },
+    "center": "Sun",
+    "vp_distance": 45034436610,
+    "zoom": 20000,
     "bodies":
     {
         "Sun": {
@@ -46,6 +43,7 @@
             "day": 0.99726968,
             "color": [0.0, 0.6, 1.0, 1.0],
             "texture_src": "2k_earth_daymap.jpg",
+            "tilt": 24,
             "moons": 
             {
                 "Moon": {
@@ -68,6 +66,7 @@
             "day": 1.025,
             "color": [1.0, 0.3, 0.0, 1.0],
             "texture_src": "2k_mars.jpg",
+            "tilt":24,
             "moons": 
             {
                 "Phobos": {
@@ -172,8 +171,7 @@
                     "diameter": 1062,
                     "orbit": 294619,
                     "year": 1.9,
-                    "color": [1.0, 1.0, 1.0, 1.0],
-                    "texture_src": null
+                    "color": [1.0, 1.0, 1.0, 1.0]
                 },
                 "Dione" : {
                     "name": "Dione",
