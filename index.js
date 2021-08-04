@@ -201,6 +201,7 @@ function addBodiesButtons()
     for(const [_, body] of Object.entries(solar_system_data.bodies))
     {
         createCelestialBodyButtonNav(body);
+        
     }
 }
 
@@ -225,6 +226,9 @@ function createCelestialBodyButtonNav(body)
     a.className += "nav-link"
     a.href="#"
     a.innerText = body.name
+
+    a.setAttribute("data-toggle", "collapse")
+    a.setAttribute("data-target", "#planetsNavbar")
 
     li.appendChild(a);  
     container.appendChild(li)
@@ -404,7 +408,8 @@ function animate()
     }
     solar_system_time += time_increment;
 
-    execution_time++;
+    if(time_increment)
+        execution_time++;
 
     renderOverlay();
 

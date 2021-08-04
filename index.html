@@ -20,6 +20,15 @@
         user-select: none;
         }
 
+    #timeContainer
+    {
+        position: absolute;
+        color: white;
+        position: absolute;
+        top:0;
+        right: 0;
+    }
+
     #planetsContainer {
         position: absolute;
         width: 700px;
@@ -42,13 +51,7 @@
         left: 0;
     }
 
-    #timeContainer
-    {
-        color: white;
-        position: absolute;
-        bottom:0;
-        left: 0;
-    }
+    
 
     #timeContainer button
     {
@@ -104,7 +107,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <body style="margin: 0px">
     <div>
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark" >
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark" id="nav">
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#planetsNavbar">
                 <span class="navbar-toggler-icon"></span>
@@ -138,33 +141,37 @@
                 <span id="seconds_start"></span> seconds since start
                 Using <span id="shading_method"></span> shading
             </div>
+            <div id = "timeContainer" >
+                <button id = "v0" class="btn btn-danger" speed=0>
+                    <i class="bi bi-pause" aria-hidden="false"></i>
+                </button>
+                <button id = "v1" class="btn btn-danger" speed=1>
+                    <i class="bi bi-play-fill"></i>
+                </button>
+                <button id = "v2" class="btn btn-danger" speed=2>
+                    <i class="bi bi-skip-end-fill"></i>
+                </button>
+                <button id = "v3" class="btn btn-danger" speed=3>
+                    <i class="bi bi-skip-forward-fill"></i>
+                </button>
+                <button id = "v9" class="btn btn-danger" speed=9>
+                    <i class="bi bi-skip-forward-fill"></i>
+                    <i class="bi bi-skip-forward-fill"></i>
+                </button>
+            </div>
         </div>
         
-        <div id = "timeContainer" >
-            <button id = "v0" class="btn btn-danger" speed=0>
-                <i class="bi bi-pause" aria-hidden="false"></i>
-            </button>
-            <button id = "v1" class="btn btn-danger" speed=1>
-                <i class="bi bi-play-fill"></i>
-            </button>
-            <button id = "v2" class="btn btn-danger" speed=2>
-                <i class="bi bi-skip-end-fill"></i>
-            </button>
-            <button id = "v3" class="btn btn-danger" speed=3>
-                <i class="bi bi-skip-forward-fill"></i>
-            </button>
-            <button id = "v9" class="btn btn-danger" speed=9>
-                <i class="bi bi-skip-forward-fill"></i>
-                <i class="bi bi-skip-forward-fill"></i>
-            </button>
-        </div>
+        
 
         <div id="scalesContainer" class = "slidersStyle">
             <button id="wiki" class="btn btn-success">Wikipedia</button>
             <div>
                 <button id = "resetScale" class="btn btn-success">Reset Scale</button>
                 <button id = "realScale" class="btn btn-success">Real Scale</button>
-                <button id = "help" class="btn btn-success">Help</button><br>
+                <button id = "help" class="btn btn-success">
+                    <i class="bi bi-question-circle-fill"></i>
+                    Help
+                </button><br>
                 planets:<input type="range" min="1" max="100" step="0.05" value="10" class="form-range" id="planetRange">
                 orbits:<input type="range" min="0.025" max="1" step="0.001" value="0.025" class="form-range" id="orbitRange">
             </div>
