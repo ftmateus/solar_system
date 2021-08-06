@@ -177,7 +177,7 @@ window.onload = function() {
         if(time_increment == 0) animate();
     });
     $('#help').bind('click', function() {
-        alert(help_msg);
+        //alert(help_msg);
     });
 
 
