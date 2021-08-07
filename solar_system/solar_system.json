@@ -215,7 +215,8 @@
             },
             "rings": 
             {
-
+                "height": 0,
+                "width": 273600
             }
         },
         "Uranus": {
@@ -231,6 +232,11 @@
             "moons":
             {
 
+            },
+            "rings": 
+            {
+                "height": 0,
+                "width": 98000
             }
         },
         "Neptune": {

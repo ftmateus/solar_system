@@ -137,7 +137,7 @@ window.onload = function() {
     nextProgram = programPhong;
 
     sphereInit(gl, 250, 100);
-    torusInit(gl);
+    //torusInit(gl);
 
     setupPlanetsTextures();
 
@@ -457,11 +457,16 @@ function addPlanet(planet)
         popMatrix();
         if (planet.rings)
         {
+            if(!planet.rings.glObj)
+            {
+                planet.rings.glObj = new Torus(gl)
+            }
             pushMatrix();
             {
                 multRotationX(-30);
-                multScale([planet.diameter*1.8*planet_scale, 0, planet.diameter*1.8*planet_scale]);
-                drawRings();
+                multRotationZ((planet.tilt ? planet.tilt : 0)*Math.cos((solar_system_time/planet.year)*Math.PI/180))
+                multScale([planet.rings.width*planet_scale, planet.rings.height, planet.rings.width*planet_scale]);
+                drawRings(planet.rings.glObj);
             }
             popMatrix();
         }
@@ -512,16 +517,16 @@ function drawPlanet(color, distance, texture = null)
         sphereDrawWireFrame(gl, currentProgram, texture);
 }
 
-function drawRings()
+function drawRings(glObj)
 {
-    gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
-    gl.uniform1i(noTextureLoc, 1);
-    gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
-    gl.uniform4fv(colorLoc, solar_system_data.bodies.Saturn.color);
+    glObj.gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
+    glObj.gl.uniform1i(noTextureLoc, 1);
+    glObj.gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
+    glObj.gl.uniform4fv(colorLoc, solar_system_data.bodies.Saturn.color);
     if (isFilled)
-        torusDrawFilled(gl, currentProgram);
+        glObj.torusDrawFilled(currentProgram);
     else 
-        torusDrawWireFrame(gl, currentProgram);
+        glObj.torusDrawWireFrame(gl, currentProgram);
 }
 
 function renderOverlay()
