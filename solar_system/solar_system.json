@@ -22,7 +22,8 @@
             "year": 87.97,
             "day": 58.646,
             "color": [1.0, 1.0, 1.0, 1.0],
-            "texture_src": "2k_mercury.jpg"
+            "texture_src": "2k_mercury.jpg",
+            "tilt": 0.034
         },
         "Venus": {
             "name": "Venus",
@@ -32,7 +33,9 @@
             "year": 224.70,
             "day": 243.018,
             "color": [1.0, 0.8, 0.0, 1.0],
-            "texture_src": "2k_venus_atmosphere.jpg"
+            "texture_src": "2k_venus_atmosphere.jpg",
+            "tilt": 2.64,
+            "retrogade": true
         },
         "Earth": {
             "name": "Earth",
@@ -43,7 +46,7 @@
             "day": 0.99726968,
             "color": [0.0, 0.6, 1.0, 1.0],
             "texture_src": "2k_earth_daymap.jpg",
-            "tilt": 24,
+            "tilt": 23.439,
             "moons": 
             {
                 "Moon": {
@@ -66,7 +69,7 @@
             "day": 1.025,
             "color": [1.0, 0.3, 0.0, 1.0],
             "texture_src": "2k_mars.jpg",
-            "tilt":24,
+            "tilt": 25.19,
             "moons": 
             {
                 "Phobos": {
@@ -98,6 +101,7 @@
             "day": 0.4,
             "color": [1.0, 1.0, 0.0, 1.0],
             "texture_src": "2k_jupiter.jpg",
+            "tilt": 3.13,
             "moons":
             {
                 "Io": {
@@ -147,6 +151,7 @@
             "day":  0.42,
             "color": [1.0, 1.0, 0.0, 1.0],
             "texture_src": "2k_saturn.jpg",
+            "tilt": 26.73,
             "moons":
             {
                 "Mimas" : {
@@ -222,6 +227,7 @@
             "day": 0.72,
             "color": [0.0, 1.0, 1.0, 1.0],
             "texture_src": "2k_uranus.jpg",
+            "tilt": 97.77,
             "moons":
             {
 
@@ -236,6 +242,7 @@
             "day": 0.65,
             "color": [0.0, 0.3, 1.0, 1.0],
             "texture_src": "2k_neptune.jpg",
+            "tilt": 28.32,
             "moons":
             {
                 

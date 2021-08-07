@@ -114,9 +114,9 @@ window.onresize = function () {
 
 function change_time_increment(inc)
 {
-    let wasAnimated = time_increment != 0;
+      let wasAnimated = time_increment != 0;
     time_increment = Math.pow(parseInt(inc == " " ? 0 : inc) , 3);
-    if (!wasAnimated) animate();
+    if (!wasAnimated) animate(false);
 }
 
 window.onload = function() {
@@ -189,7 +189,7 @@ window.onload = function() {
     //     console.log(document.hidden, document.visibilityState);
     //   }, false);
 
-    animate();
+    animate(false);
 }
 
 function addBodiesButtons()
@@ -439,19 +439,30 @@ function addPlanet(planet)
 {
     gl.uniform1i(sunLoc, 0);
     pushMatrix();
+    {
         multRotationY(solar_system_time/planet.year);
         multTranslation([planet.orbit*orbit_scale, 0, 0]);
         pushMatrix();
+        {
             multScale([ planet.diameter*planet_scale, planet.diameter*planet_scale, planet.diameter*planet_scale]);
-            multRotationY(solar_system_time/planet.day);
-            drawPlanet(planet.color, textures && isFilled ? planet.texture : null, planet.distance);
+
+            multRotationZ((planet.tilt ? planet.tilt : 0)*Math.cos((solar_system_time/planet.year)*Math.PI/180))
+            if(planet.retrogade)
+                multRotationY(-solar_system_time/planet.day);
+            else
+                multRotationY(solar_system_time/planet.day);
+            
+            drawPlanet(planet.color, planet.distance, textures && isFilled ? planet.texture : null);
+        } 
         popMatrix();
         if (planet.rings)
         {
             pushMatrix();
+            {
                 multRotationX(-30);
                 multScale([planet.diameter*1.8*planet_scale, 0, planet.diameter*1.8*planet_scale]);
                 drawRings();
+            }
             popMatrix();
         }
         if (planet.moons != null)
@@ -468,11 +479,12 @@ function addPlanet(planet)
                     // }
                     pushMatrix();
                         multScale([ moon.diameter*planet_scale, moon.diameter*planet_scale, moon.diameter*planet_scale]);
-                        drawPlanet(moon.color, textures && isFilled  ? moon.texture : null, planet.distance);
+                        drawPlanet(moon.color, planet.distance, textures && isFilled  ? moon.texture : null);
                     popMatrix();
                 popMatrix();
             }
         }
+    }  
     popMatrix();
 }
 
@@ -483,11 +495,11 @@ function addStar(star)
         pushMatrix();
         multScale([ star.diameter, star.diameter, star.diameter]);
         multRotationY(solar_system_time/star.day);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), textures && isFilled  ? star.texture : null, 0);
+            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), 0, textures && isFilled  ? star.texture : null);
         popMatrix();
     popMatrix();
 }
-function drawPlanet(color, texture = null, distance)
+function drawPlanet(color, distance, texture = null)
 {
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
