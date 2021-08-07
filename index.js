@@ -109,10 +109,7 @@ function fit_canvas_to_window()
 
 window.onresize = function () {
     fit_canvas_to_window();
-    if(time_increment == 0) 
-    {   
-        animate();
-    }
+    animate(true);
 }
 
 function change_time_increment(inc)
@@ -152,7 +149,7 @@ window.onload = function() {
     hammertime.get('pinch').set({ enable: true });
     hammertime.on('pinch', function(ev) {
         zoom *= ev.scale > 1 ? 1.01 : 0.99;
-        if (time_increment == 0) animate();
+        animate(true);
     });
 
     //this.document.getElementById("sun").addEventListener("click", function() {center = SUN});
@@ -168,13 +165,13 @@ window.onload = function() {
         planet_scale = document.getElementById("planetRange").value = 10;
         orbit_scale = document.getElementById("orbitRange").value = 0.025;
         orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
-        if(time_increment == 0) animate();
+        animate(true);
     });
     $('#realScale').bind('click', function() {
         planet_scale = document.getElementById("planetRange").value = 1;
         orbit_scale = document.getElementById("orbitRange").value = 1;
         orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
-        if(time_increment == 0) animate();
+       animate(true);
     });
     $('#help').bind('click', function() {
         //alert(help_msg);
@@ -185,7 +182,7 @@ window.onload = function() {
         planet_scale = document.getElementById("planetRange").value;
         orbit_scale = document.getElementById("orbitRange").value;
         orbit_scale_moons = 1*Math.exp(orbit_scale-1)*Math.exp((planet_scale-1)/100);
-        if(time_increment == 0) animate();
+        animate(true);
     });
 
     // document.addEventListener("visibilitychange", function() {
@@ -213,7 +210,7 @@ function createCelestialBodyButton(body)
     //bootstrap
     button.className += "btn btn-primary"
     container.appendChild(button);   
-    button.addEventListener("click", function() {center = body; if (time_increment == 0) animate();});
+    button.addEventListener("click", function() {center = body; animate(true);});
 }
 
 function createCelestialBodyButtonNav(body)
@@ -233,7 +230,7 @@ function createCelestialBodyButtonNav(body)
     li.appendChild(a);  
     container.appendChild(li)
 
-    a.addEventListener("click", function() {center = body; if (time_increment == 0) animate();});
+    a.addEventListener("click", function() {center = body; animate(true);});
 }
 
 
@@ -308,7 +305,7 @@ function setupTexture(imagesrc)
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
         gl.generateMipmap(gl.TEXTURE_2D);
-        animate();
+        animate(true);
     });
 
     return texture;
@@ -392,7 +389,7 @@ function moveCamera()
     gl.uniformMatrix4fv(mProjectionLoc, false, flatten(projection));
 }
 
-function animate()
+function animate(refreshOnly)
 {
     if (nextProgram != null) switchShading();
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -407,14 +404,19 @@ function animate()
             default: console.assert(false, "Unknown body type!")
         }
     }
-    solar_system_time += time_increment;
-
-    if(time_increment)
-        execution_time++;
-
+    
     renderOverlay();
 
-    request = requestAnimationFrame(render);
+    if(!refreshOnly)
+    {
+        solar_system_time += time_increment;
+
+        if(time_increment)
+            execution_time++;
+
+        request = requestAnimationFrame(render);
+    }
+        
 }
 
 function render() 
@@ -430,7 +432,7 @@ function zoomCanvas(e)
     var e_delta = (e.deltaY || -e.wheelDelta || e.detail);
     var delta =  e_delta && ((e_delta >> 10) || 1) || 0;
     zoom *= (delta > 0 || event.detail > 0) ? 1.1 : 0.9;
-    if (time_increment == 0) animate();
+    animate(true);
 }
 
 function addPlanet(planet)
