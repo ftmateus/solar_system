@@ -53,6 +53,8 @@ const EARTH_ORBIT = 149570000*orbit_scale;
 const EARTH_YEAR = 365.26;
 const EARTH_DAY = 0.99726968;
 
+let DEFAULT_SPHERE;
+
 var center;
 
 var VP_DISTANCE = 100000000000;
@@ -121,8 +123,6 @@ function change_time_increment(inc)
 
 window.onload = function() {
 
-    loadSolarSystem()
-
     canvas = document.getElementById('gl-canvas');
 
     gl = WebGLUtils.setupWebGL(document.getElementById('gl-canvas'));
@@ -136,10 +136,13 @@ window.onload = function() {
     programGouraud = initShaders(gl, './gouraud_v_shader.glsl', './gouraud_f_shader.glsl');
     nextProgram = programPhong;
 
-    sphereInit(gl, 250, 100);
+    //sphereInit(gl, 250, 100);
+    DEFAULT_SPHERE = new Sphere(gl, 250, 100);
     //torusInit(gl);
 
-    setupPlanetsTextures();
+    loadSolarSystem()
+
+    setupPlanets();
 
     this.start_time = new Date().getTime();
     addEventListener("keypress", keyPress);
@@ -268,19 +271,23 @@ function switchShading()
     this.distanceLoc = gl.getUniformLocation(currentProgram, "distance");
 }
 
-function setupPlanetsTextures()
+function setupPlanets()
 {
     for(const [_, body] of Object.entries(solar_system_data.bodies))
-    {
-        body.texture = setupTexture(body.texture_src);
-        if(body.moons)
-        {
-            for (const [_, moon] of Object.entries(body.moons))
-            {
-                moon.texture = setupTexture(moon.texture_src);
-            }
-        }
-    }
+        setupSolarSystemBody(body)
+}
+
+function setupSolarSystemBody(body)
+{
+    body.glObj = DEFAULT_SPHERE
+    body.texture = setupTexture(body.texture_src);
+
+    if(body.moons)
+        for (const [_, moon] of Object.entries(body.moons))
+            setupSolarSystemBody(moon)
+
+    if(body.rings)
+        body.rings.glObj = new Torus(gl)
 }
 
 
@@ -452,21 +459,17 @@ function addPlanet(planet)
             else
                 multRotationY(solar_system_time/planet.day);
             
-            drawPlanet(planet.color, planet.distance, textures && isFilled ? planet.texture : null);
+            drawPlanet(planet);
         } 
         popMatrix();
         if (planet.rings)
         {
-            if(!planet.rings.glObj)
-            {
-                planet.rings.glObj = new Torus(gl)
-            }
             pushMatrix();
             {
                 multRotationX(-30);
                 multRotationZ((planet.tilt ? planet.tilt : 0)*Math.cos((solar_system_time/planet.year)*Math.PI/180))
                 multScale([planet.rings.width*planet_scale, planet.rings.height, planet.rings.width*planet_scale]);
-                drawRings(planet.rings.glObj);
+                drawRings(planet);
             }
             popMatrix();
         }
@@ -475,7 +478,7 @@ function addPlanet(planet)
             for (const [moonname, moon] of Object.entries(planet.moons))
             {
                 pushMatrix();
-                    multRotationX(-30);
+                    //multRotationX(-30);
                     multRotationY(solar_system_time/moon.year);
                     multTranslation([moon.orbit*orbit_scale_moons + planet.diameter/2*planet_scale*Math.log(planet_scale), 0, 0]);
                     // if (planet == planets.SATURN)
@@ -484,7 +487,7 @@ function addPlanet(planet)
                     // }
                     pushMatrix();
                         multScale([ moon.diameter*planet_scale, moon.diameter*planet_scale, moon.diameter*planet_scale]);
-                        drawPlanet(moon.color, planet.distance, textures && isFilled  ? moon.texture : null);
+                        drawPlanet(moon);
                     popMatrix();
                 popMatrix();
             }
@@ -500,33 +503,35 @@ function addStar(star)
         pushMatrix();
         multScale([ star.diameter, star.diameter, star.diameter]);
         multRotationY(solar_system_time/star.day);
-            drawPlanet(vec4(1.0, 1.0, 1.0, 1.0), 0, textures && isFilled  ? star.texture : null);
+            drawPlanet(star);
         popMatrix();
     popMatrix();
 }
-function drawPlanet(color, distance, texture = null)
+
+// function drawPlanet(color, distance, texture = null)
+function drawPlanet(planet)
 {
     gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
     gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
-    gl.uniform4fv(colorLoc, color);
-    gl.uniform1f(distanceLoc, distance);
-    gl.uniform1i(noTextureLoc, texture == null ? 1 : 0);
+    gl.uniform4fv(colorLoc, planet.color);
+    gl.uniform1f(distanceLoc, planet.distance);
+    gl.uniform1i(noTextureLoc, planet.texture == null ? 1 : 0);
     if (isFilled)
-        sphereDrawFilled(gl, currentProgram, texture);
+        planet.glObj.sphereDrawFilled(currentProgram, planet.texture);
     else 
-        sphereDrawWireFrame(gl, currentProgram, texture);
+        planet.glObj.sphereDrawWireFrame(currentProgram, planet.texture);
 }
 
-function drawRings(glObj)
+function drawRings(planet)
 {
-    glObj.gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
-    glObj.gl.uniform1i(noTextureLoc, 1);
-    glObj.gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
-    glObj.gl.uniform4fv(colorLoc, solar_system_data.bodies.Saturn.color);
+    planet.rings.glObj.gl.uniformMatrix4fv(mNormalsLoc, false, flatten(normalMatrix(modelView, false)));
+    planet.rings.glObj.gl.uniform1i(noTextureLoc, 1);
+    planet.rings.glObj.gl.uniformMatrix4fv(mModelViewLoc, false, flatten(modelView));
+    planet.rings.glObj.gl.uniform4fv(colorLoc, solar_system_data.bodies.Saturn.color);
     if (isFilled)
-        glObj.torusDrawFilled(currentProgram);
+        planet.rings.glObj.torusDrawFilled(currentProgram);
     else 
-        glObj.torusDrawWireFrame(gl, currentProgram);
+        planet.rings.glObj.torusDrawWireFrame(currentProgram);
 }
 
 function renderOverlay()
