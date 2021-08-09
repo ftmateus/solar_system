@@ -221,14 +221,47 @@ function createCelestialBodyButtonNav(body)
     const container = document.getElementById('planetsNavbarBtnsCont');
     const li = document.createElement("li");
     li.className += "nav-item"
-
     const a = document.createElement("a");
     a.className += "nav-link"
     a.href="#"
     a.innerText = body.name
 
-    a.setAttribute("data-toggle", "collapse")
-    a.setAttribute("data-target", "#planetsNavbar")
+    if(body.moons)
+    {
+        li.className += " dropdown"
+        a.className += " dropdown-toggle"
+
+        a.setAttribute("id", body.name + "Dropdown")
+        a.setAttribute("role", "button")
+        a.setAttribute("data-toggle", "dropdown")
+        a.setAttribute("aria-haspopup", "true")
+        a.setAttribute("aria-expanded", "false")
+
+        const dropdownDiv = document.createElement("div")
+        dropdownDiv.setAttribute("class", "dropdown-menu")
+        dropdownDiv.setAttribute("aria-labelledby", body.name + "Dropdown")
+
+        for (const [moonname, moon] of Object.entries(body.moons))
+        {
+            let moonAelem = document.createElement("a")
+            moonAelem.setAttribute("class", "dropdown-item")
+            moonAelem.setAttribute("href", "#")
+            moonAelem.innerText = moonname
+
+            moonAelem.addEventListener("click", function() {center = moon; animate(true);});
+
+            dropdownDiv.appendChild(moonAelem)
+        }
+
+        li.appendChild(dropdownDiv)
+
+    }
+    else
+    {
+        
+        a.setAttribute("data-toggle", "collapse")
+        a.setAttribute("data-target", "#planetsNavbar")
+    }
 
     li.appendChild(a);  
     container.appendChild(li)
@@ -273,22 +306,40 @@ function switchShading()
 
 function setupPlanets()
 {
+    let planetCurrentPos = function()
+    {
+        return [this.orbit*orbit_scale, 0, 0]
+    }
+
+    let moonCurrentPos = function()
+    {
+        return [this.orbit*orbit_scale_moons + this.orbiting.diameter/2*planet_scale*Math.log(planet_scale), 0, 0]
+    }
+
+    function setupSolarSystemBody(body)
+    {
+        body.glObj = DEFAULT_SPHERE
+        body.texture = setupTexture(body.texture_src);
+    
+        if(body.moons)
+            for (const [_, moon] of Object.entries(body.moons))
+            {
+                setupSolarSystemBody(moon)
+                moon.orbiting = body
+                moon.currentPos = moonCurrentPos
+            }
+                
+        body.currentPos = planetCurrentPos
+
+        if(body.rings)
+            body.rings.glObj = new Torus(gl)
+    }
+
     for(const [_, body] of Object.entries(solar_system_data.bodies))
         setupSolarSystemBody(body)
 }
 
-function setupSolarSystemBody(body)
-{
-    body.glObj = DEFAULT_SPHERE
-    body.texture = setupTexture(body.texture_src);
 
-    if(body.moons)
-        for (const [_, moon] of Object.entries(body.moons))
-            setupSolarSystemBody(moon)
-
-    if(body.rings)
-        body.rings.glObj = new Torus(gl)
-}
 
 
 function setupTexture(imagesrc)
@@ -380,16 +431,32 @@ function mouseUp(ev) {
     isMoving = false;
 }
 
+function getBodyCoordinates(body)
+{
+    let coords = {x: 0, y: 0}
+    if(body.orbiting)
+    {
+        let orbCoords = getBodyCoordinates(body.orbiting)
+        coords.x += orbCoords.x
+        coords.y += orbCoords.y
+    }
+    let theta = body.year == 0 ? 0 : radians(solar_system_time/body.year);
+
+    coords.x += body.currentPos()[0]*Math.cos(theta);
+    
+    coords.y += body.currentPos()[0]*Math.sin(theta);
+
+    return coords
+}
+
 function moveCamera()
 {
-    var projection =mult(ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-100*VP_DISTANCE,100*VP_DISTANCE),
+    let projection =mult(ortho(-VP_DISTANCE*aspect,VP_DISTANCE*aspect, -VP_DISTANCE, VP_DISTANCE,-100*VP_DISTANCE,100*VP_DISTANCE),
     scalem(zoom, zoom, 1));
     
-    var theta = center.year == 0 ? 0 : radians(solar_system_time/center.year);
-    
-    var x = center.orbit*Math.cos(theta)*orbit_scale;
-    var y = center.orbit*Math.sin(theta)*orbit_scale;
-    modelView = plane_floor ? PLANE_FLOOR : lookAt(currentCameraDistance, [x,0,-y], [0,1,0]);
+    let coords = getBodyCoordinates(center)
+
+    modelView = plane_floor ? PLANE_FLOOR : lookAt(currentCameraDistance, [coords.x,0,-coords.y], [0,1,0]);
 
     gl.uniformMatrix4fv(mViewLoc, false, flatten(modelView));
     gl.uniformMatrix4fv(mViewNormalsLoc, false, flatten(normalMatrix(modelView, false)));
@@ -448,7 +515,7 @@ function addPlanet(planet)
     pushMatrix();
     {
         multRotationY(solar_system_time/planet.year);
-        multTranslation([planet.orbit*orbit_scale, 0, 0]);
+        multTranslation(planet.currentPos());
         pushMatrix();
         {
             multScale([ planet.diameter*planet_scale, planet.diameter*planet_scale, planet.diameter*planet_scale]);
@@ -480,7 +547,7 @@ function addPlanet(planet)
                 pushMatrix();
                     //multRotationX(-30);
                     multRotationY(solar_system_time/moon.year);
-                    multTranslation([moon.orbit*orbit_scale_moons + planet.diameter/2*planet_scale*Math.log(planet_scale), 0, 0]);
+                    multTranslation(moon.currentPos());
                     // if (planet == planets.SATURN)
                     // {
                     //     multTranslation([planet.diameter*PLANET_SCALE/2, 0, 0]);

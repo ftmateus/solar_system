@@ -125,12 +125,17 @@
                     </li> -->
                     
                 </ul>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link bi bi-toggles2" href="#"></a>
+                    </li>
+                </ul>
                 <ul class="navbar-nav mr-auto" id="moreNavbarBtnCont">
                     <li class="nav-item dropdown">
                         <a class="nav-link bi bi-three-dots" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="#">About</a>
+                          <a class="dropdown-item bi bi-question-circle-fill" href="#" data-toggle="modal" data-target="#exampleModal"> Help</a>
                           <a class="dropdown-item bi bi-github" target="_blank" href="https://github.com/ftmateus/solar_system"> Github</a>
                           <div class="dropdown-divider"></div>
                           <a class="dropdown-item" href="#">Something else here</a>
@@ -175,10 +180,7 @@
                 <div>
                     <button id = "resetScale" class="btn btn-success">Reset Scale</button>
                     <button id = "realScale" class="btn btn-success">Real Scale</button>
-                    <button id = "help" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">
-                        <i class="bi bi-question-circle-fill"></i>
-                        Help
-                    </button><br>
+                    <br>
                     planets:<input type="range" min="1" max="100" step="0.05" value="10" class="form-range" id="planetRange">
                     orbits:<input type="range" min="0.025" max="1" step="0.001" value="0.025" class="form-range" id="orbitRange">
                 </div>
