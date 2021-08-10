@@ -126,19 +126,22 @@
                     
                 </ul>
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link bi bi-toggles2" href="#"></a>
+                    <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Show/hide controls">
+                        <a class="nav-link bi bi-toggles2" style="color:rgb(42, 94, 172)" id="toggles" href="#"></a>
                     </li>
                 </ul>
                 <ul class="navbar-nav mr-auto" id="moreNavbarBtnCont">
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown" data-toggle="tooltip" data-placement="bottom" title="More options">
                         <a class="nav-link bi bi-three-dots" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          
+                          <a id="overlay_switch" class="dropdown-item" href="#">Hide overlay</a> 
+                          <a id="backfaceculling_switch" class="dropdown-item" href="#">Enable backface culling (b)</a> 
+                          <a id="zbuffer_switch" class="dropdown-item" href="#">Disable zbuffer (z)</a> 
                           <a class="dropdown-item bi bi-question-circle-fill" href="#" data-toggle="modal" data-target="#exampleModal"> Help</a>
-                          <a class="dropdown-item bi bi-github" target="_blank" href="https://github.com/ftmateus/solar_system"> Github</a>
                           <div class="dropdown-divider"></div>
-                          <a class="dropdown-item" href="#">Something else here</a>
+                          <a class="dropdown-item bi bi-github" target="_blank" href="https://github.com/ftmateus/solar_system"> Github</a>
                         </div>
                       </li>
                 </ul>

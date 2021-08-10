@@ -18,7 +18,7 @@ var solar_system_time = 0;
 
 var start_time;
 
-var isFilled = true, cullFace = false, zBuffer = false;
+var isFilled = true, cullFace = false, zBuffer = true;
 
 const ZBUFFER_KEY = 'z', BACKFACE_CULLING_KEY = 'b';
 const WIRED_FRAME_KEY = 'w', FILLED_KEY = 'f';
@@ -180,6 +180,53 @@ window.onload = function() {
         //alert(help_msg);
     });
 
+    $('#toggles').bind('click', function() 
+    {
+        let timeCtr = $("#timeContainer")
+        let scalesCtr = $("#scalesContainer")
+        
+        if(timeCtr.is(":hidden") && scalesCtr.is(":hidden"))
+        {
+            timeCtr.show("fast");
+            scalesCtr.show("fast");
+            $('#toggles').css("color", "rgb(42, 94, 172)")
+        }
+        else
+        {
+            console.assert(!timeCtr.is(":hidden") && !scalesCtr.is(":hidden"))
+            timeCtr.hide("fast");
+            scalesCtr.hide("fast");
+
+            $('#toggles').css("color", "rgba(255,255,255,.55)")
+        }
+    })
+
+    $("#backfaceculling_switch").bind("click", function()
+    {
+        switchBackFaceCulling()
+    })
+
+    $("#zbuffer_switch").bind("click", function()
+    {
+        switchZbuffer()
+    })
+
+    $("#overlay_switch").bind("click", function()
+    {
+        let overlayElem = $("#overlay")
+        if(overlayElem.is(":hidden"))
+        {
+            overlayElem.show("fast")
+            $("#overlay_switch").text("Hide overlay")
+        }
+        else
+        {
+            overlayElem.hide("fast")
+            $("#overlay_switch").text("Show overlay")
+        }
+            
+    })
+
 
     document.getElementById("scalesContainer").addEventListener("input", function(){
         planet_scale = document.getElementById("planetRange").value;
@@ -195,13 +242,34 @@ window.onload = function() {
     animate(false);
 }
 
+function switchBackFaceCulling()
+{
+    if (cullFace = !cullFace) 
+    {
+        gl.enable(gl.CULL_FACE);
+        gl.cullFace(gl.BACK);
+        gl.frontFace(gl.CCW);
+    }
+    else gl.disable(gl.CULL_FACE);
+    $("#backfaceculling_switch").text((cullFace ? "Disable" : "Enable") + " backface culling (b)")
+    animate(true)
+}
+
+function switchZbuffer()
+{
+    if (zBuffer = !zBuffer)
+        gl.enable(gl.DEPTH_TEST);
+    else gl.disable(gl.DEPTH_TEST);
+    $("#zbuffer_switch").text((zBuffer ? "Disable" : "Enable") + " zbuffer (z)")
+    animate(true)
+}
+
 function addBodiesButtons()
 {
     
     for(const [_, body] of Object.entries(solar_system_data.bodies))
     {
         createCelestialBodyButtonNav(body);
-        
     }
 }
 
@@ -222,6 +290,7 @@ function createCelestialBodyButtonNav(body)
     const li = document.createElement("li");
     li.className += "nav-item"
     const a = document.createElement("a");
+    a.setAttribute("id", body.name)
     a.className += "nav-link"
     a.href="#"
     a.innerText = body.name
@@ -231,7 +300,7 @@ function createCelestialBodyButtonNav(body)
         li.className += " dropdown"
         a.className += " dropdown-toggle"
 
-        a.setAttribute("id", body.name + "Dropdown")
+        a.setAttribute("id", body.name)
         a.setAttribute("role", "button")
         a.setAttribute("data-toggle", "dropdown")
         a.setAttribute("aria-haspopup", "true")
@@ -239,7 +308,7 @@ function createCelestialBodyButtonNav(body)
 
         const dropdownDiv = document.createElement("div")
         dropdownDiv.setAttribute("class", "dropdown-menu")
-        dropdownDiv.setAttribute("aria-labelledby", body.name + "Dropdown")
+        dropdownDiv.setAttribute("aria-labelledby", body.name)
 
         for (const [moonname, moon] of Object.entries(body.moons))
         {
@@ -248,7 +317,12 @@ function createCelestialBodyButtonNav(body)
             moonAelem.setAttribute("href", "#")
             moonAelem.innerText = moonname
 
-            moonAelem.addEventListener("click", function() {center = moon; animate(true);});
+            moonAelem.addEventListener("click", function() 
+            {
+                $("#" + center.name).css("color", "rgba(255,255,255,.55)")
+                center = moon; 
+                animate(true);
+            });
 
             dropdownDiv.appendChild(moonAelem)
         }
@@ -266,7 +340,13 @@ function createCelestialBodyButtonNav(body)
     li.appendChild(a);  
     container.appendChild(li)
 
-    a.addEventListener("click", function() {center = body; animate(true);});
+    a.addEventListener("click", function() 
+    {
+        $("#" + center.name).css("color", "rgba(255,255,255,.55)")
+        center = body; 
+        $("#" + center.name).css("color", "rgb(42, 94, 172)")
+        animate(true);
+    });
 }
 
 
@@ -306,12 +386,12 @@ function switchShading()
 
 function setupPlanets()
 {
-    let planetCurrentPos = function()
+    let planetTranslation = function()
     {
         return [this.orbit*orbit_scale, 0, 0]
     }
 
-    let moonCurrentPos = function()
+    let moonTranslation = function()
     {
         return [this.orbit*orbit_scale_moons + this.orbiting.diameter/2*planet_scale*Math.log(planet_scale), 0, 0]
     }
@@ -326,10 +406,10 @@ function setupPlanets()
             {
                 setupSolarSystemBody(moon)
                 moon.orbiting = body
-                moon.currentPos = moonCurrentPos
+                moon.translation = moonTranslation
             }
                 
-        body.currentPos = planetCurrentPos
+        body.translation = planetTranslation
 
         if(body.rings)
             body.rings.glObj = new Torus(gl)
@@ -380,17 +460,10 @@ function keyPress(ev)
         case WIRED_FRAME_KEY: isFilled = false; break;
         case FILLED_KEY: isFilled = true; break;
         case BACKFACE_CULLING_KEY: 
-            if (cullFace = !cullFace) 
-            {
-                gl.enable(gl.CULL_FACE);
-                gl.cullFace(gl.BACK);
-                gl.frontFace(gl.CCW);
-            }
-            else gl.disable(gl.CULL_FACE);
+            switchBackFaceCulling()
         break;
         case ZBUFFER_KEY: 
-            if (zBuffer = !zBuffer) gl.enable(gl.DEPTH_TEST);
-            else gl.disable(gl.DEPTH_TEST);
+            switchZbuffer()
         break;
         case "9": case "3": case "2":
         case "1": case "0": case " ":
@@ -442,9 +515,9 @@ function getBodyCoordinates(body)
     }
     let theta = body.year == 0 ? 0 : radians(solar_system_time/body.year);
 
-    coords.x += body.currentPos()[0]*Math.cos(theta);
+    coords.x += body.translation()[0]*Math.cos(theta);
     
-    coords.y += body.currentPos()[0]*Math.sin(theta);
+    coords.y += body.translation()[0]*Math.sin(theta);
 
     return coords
 }
@@ -515,7 +588,7 @@ function addPlanet(planet)
     pushMatrix();
     {
         multRotationY(solar_system_time/planet.year);
-        multTranslation(planet.currentPos());
+        multTranslation(planet.translation());
         pushMatrix();
         {
             multScale([ planet.diameter*planet_scale, planet.diameter*planet_scale, planet.diameter*planet_scale]);
@@ -547,7 +620,7 @@ function addPlanet(planet)
                 pushMatrix();
                     //multRotationX(-30);
                     multRotationY(solar_system_time/moon.year);
-                    multTranslation(moon.currentPos());
+                    multTranslation(moon.translation());
                     // if (planet == planets.SATURN)
                     // {
                     //     multTranslation([planet.diameter*PLANET_SCALE/2, 0, 0]);
