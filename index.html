@@ -2,6 +2,8 @@
 
 <head>
 <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+<meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
 <title>Solar System</title>
 <style>
     * { margin:0; padding:0;}/* to remove the top and left whitespace */
@@ -20,14 +22,7 @@
         user-select: none;
         }
 
-    #timeContainer
-    {
-        position: absolute;
-        color: white;
-        position: absolute;
-        top:0;
-        right: 0;
-    }
+    
 
     #planetsContainer {
         position: absolute;
@@ -51,6 +46,27 @@
         left: 0;
     }
 
+
+    #directionsContainer
+    {
+        position: absolute;
+        /* border-style: solid; */
+        color: white;
+        bottom: 75px;
+        left: 10px;
+        width: 140px;
+        height: 140px;
+    }
+
+    #directionsContainer p { margin-bottom: 4px; }
+
+    #timeContainer
+    {
+        position: absolute;
+        color: white;
+        top: 0px;
+        right: 0px;
+    }
     
 
     #timeContainer button
@@ -65,7 +81,7 @@
     {
         color: white;
         position: absolute;
-        bottom: 65px;
+        bottom: 75px;
         right: 10px;
         display: table;
         margin: auto;
@@ -89,8 +105,8 @@
     
 </style>
 </head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="font-awesome.min.css">
+    <link href="bootstrap.min.css" rel="stylesheet" >
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <script type="text/javascript" src="Common/webgl-utils.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
@@ -103,8 +119,8 @@
     <script type="text/javascript" src="index.js"></script>
     <script type="text/javascript" src="jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="hammer.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="popper.min.js" ></script>
+    <script src="bootstrap.min.js" ></script>
 <body style="margin: 0px">
     <div>
         <nav class="navbar navbar-expand-md navbar-dark" id="nav" style="background-color: rgb(3, 3, 48);">
@@ -150,7 +166,7 @@
     </div>
     <div>
         <div style="position:relative">
-            <canvas id="gl-canvas" width="100%" height="100%" style="background: url('solar_system/2k_stars_milky_way.jpg')">
+           <canvas id="gl-canvas" width="100%" height="100%" style="background: url('solar_system/2k_stars_milky_way.jpg')">
                 Ooops! Your browser doesn't support WebGL!
             </canvas>
             <div id="overlay">
@@ -159,7 +175,7 @@
                 <span id="years"></span> years
                 <span id="seconds_start"></span> seconds since start
                 Using <span id="shading_method"></span> shading
-            </div>
+            </div> 
             <div id = "timeContainer" >
                 <button id = "v0" class="btn btn-danger" speed=0>
                     <i class="bi bi-pause" aria-hidden="false"></i>
@@ -187,6 +203,29 @@
                     planets:<input type="range" min="1" max="100" step="0.05" value="10" class="form-range" id="planetRange">
                     orbits:<input type="range" min="0.025" max="1" step="0.001" value="0.025" class="form-range" id="orbitRange">
                 </div>
+            </div>
+            <div id="directionsContainer" hidden="true">
+                <p>
+                    <button id = "up" class="btn btn-success" style="position: relative; left: 46px;">
+                        <i class="bi bi-caret-up-fill"></i>
+                    </button>
+                </p>
+                <p>
+                    <button id = "left" class="btn btn-success" style="position: relative;">
+                        <i class="bi bi-caret-left-fill"></i>
+                    </button>
+                    <button id = "center" class="btn btn-success" style="position: relative;">
+                        <i class="bi bi-circle-fill"></i>
+                    </button>
+                    <button id = "right" class="btn btn-success" style="position: relative;">
+                        <i class="bi bi-caret-right-fill"></i>
+                    </button>
+                </p>
+                <p>
+                    <button id = "down" class="btn btn-success" style="position: relative; left: 46px;">
+                        <i class="bi bi-caret-down-fill"></i>
+                    </button>
+                </p>
             </div>
         </div>
         <!-- Modal -->
@@ -218,9 +257,6 @@
             </div>
             </div>
         </div>
-        
-
-        
     </div>
 </body>
 </html>

@@ -1,0 +1,18 @@
+{
+  "name": "solar_system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./main.js",
+  "dependencies": {
+    "electron": "^14.0.1"
+  },
+  "devDependencies": {
+    "electron-packager": "^15.4.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tazdevil",
+  "license": "ISC"
+}
