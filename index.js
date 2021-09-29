@@ -218,21 +218,6 @@ window.onload = function() {
             
     })
 
-    $('body').on('click', 'a', (event) => {
-        event.preventDefault();
-        let userAgent = navigator.userAgent.toLowerCase();
-        if (userAgent.indexOf(' electron/') > -1) {
-            console.log("Yes", userAgent)
-            require("electron").shell.openExternal(event.target.href);
-        }
-        else
-        {
-            console.log(event)
-            window.open(null, '_blank').focus();
-        }
-      });
-
-
     document.getElementById("scalesContainer").addEventListener("input", function(){
         planet_scale = document.getElementById("planetRange").value;
         orbit_scale = document.getElementById("orbitRange").value;
