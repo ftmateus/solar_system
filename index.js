@@ -60,7 +60,7 @@ var request;
 
 
 const REFRESH_RATE = 60;
-var time_increment = 0;
+var time_increment = 1;
 
 const PLANE_FLOOR = rotateX(90);
 
