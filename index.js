@@ -285,47 +285,47 @@ function createCelestialBodyButtonNav(body)
     a.href="#"
     a.innerText = body.name
 
-    if(body.moons)
-    {
-        li.className += " dropdown"
-        a.className += " dropdown-toggle"
+    // if(body.moons)
+    // {
+    //     li.className += " dropdown"
+    //     a.className += " dropdown-toggle"
 
-        a.setAttribute("id", body.name)
-        a.setAttribute("role", "button")
-        a.setAttribute("data-toggle", "dropdown")
-        a.setAttribute("aria-haspopup", "true")
-        a.setAttribute("aria-expanded", "false")
+    //     a.setAttribute("id", body.name)
+    //     a.setAttribute("role", "button")
+    //     a.setAttribute("data-toggle", "dropdown")
+    //     a.setAttribute("aria-haspopup", "true")
+    //     a.setAttribute("aria-expanded", "false")
 
-        const dropdownDiv = document.createElement("div")
-        dropdownDiv.setAttribute("class", "dropdown-menu")
-        dropdownDiv.setAttribute("aria-labelledby", body.name)
+    //     const dropdownDiv = document.createElement("div")
+    //     dropdownDiv.setAttribute("class", "dropdown-menu")
+    //     dropdownDiv.setAttribute("aria-labelledby", body.name)
 
-        for (const [moonname, moon] of Object.entries(body.moons))
-        {
-            let moonAelem = document.createElement("a")
-            moonAelem.setAttribute("class", "dropdown-item")
-            moonAelem.setAttribute("href", "#")
-            moonAelem.innerText = moonname
+    //     for (const [moonname, moon] of Object.entries(body.moons))
+    //     {
+    //         let moonAelem = document.createElement("a")
+    //         moonAelem.setAttribute("class", "dropdown-item")
+    //         moonAelem.setAttribute("href", "#")
+    //         moonAelem.innerText = moonname
 
-            moonAelem.addEventListener("click", function() 
-            {
-                $("#" + center.name).css("color", "rgba(255,255,255,.55)")
-                center = moon; 
-                animate(true);
-            });
+    //         moonAelem.addEventListener("click", function() 
+    //         {
+    //             $("#" + center.name).css("color", "rgba(255,255,255,.55)")
+    //             center = moon; 
+    //             animate(true);
+    //         });
 
-            dropdownDiv.appendChild(moonAelem)
-        }
+    //         dropdownDiv.appendChild(moonAelem)
+    //     }
 
-        li.appendChild(dropdownDiv)
+    //     li.appendChild(dropdownDiv)
 
-    }
-    else
-    {
+    // }
+    // else
+    // {
         
         a.setAttribute("data-toggle", "collapse")
         a.setAttribute("data-target", "#planetsNavbar")
-    }
+    // }
 
     li.appendChild(a);  
     container.appendChild(li)
